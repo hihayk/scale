@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './App.css'
 import Color from 'color'
-import styled, { injectGlobal } from 'styled-components'
+import styled from 'styled-components'
 
 const errorColor = 'transparent'
 
@@ -15,6 +15,13 @@ const MainWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  & > *::selection {
+    background: ${props => {
+    const givenColor = isValidHex(props.color) ? props.color : errorColor
+    return Color(givenColor).mix(Color('white'), 0.8).string()
+  }};
+  }
 `
 
 const ColorsSection = styled.div`
@@ -48,14 +55,6 @@ const InputsRow = styled.div`
   }
 `
 
-const ColorBlock = styled.div`
-  height: 72px;
-  max-width: ${props => props.wide ? 192 : 72}px;
-  width: 100%;
-  ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
-  flex-shrink: 1;
-`
-
 const InputSeparator = styled.div`
   color: inherit;
   font-size: 72px;
@@ -79,6 +78,7 @@ const isValidHex = (color) => {
 const InputWrapper = styled.div`
   position: relative;
   width: auto;
+  border-bottom: 2px solid;
 `
 
 const DynamicInputField = styled.input`
@@ -89,7 +89,7 @@ const DynamicInputField = styled.input`
   line-height: 1;
   padding: 0;
   border: 0;
-  width: ${props => props.width}px;
+  width: 100%;
   margin-right: 16px;
   position: absolute;
   background-color: transparent;
@@ -100,6 +100,13 @@ const DynamicInputField = styled.input`
 
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
+  }
+
+  &::selection {
+    background: ${props => {
+    const givenColor = isValidHex(props.color) ? props.color : errorColor
+    return Color(givenColor).mix(Color('white'), 0.8).string()
+  }};
   }
 `
 
@@ -112,13 +119,36 @@ const DynamicInputValue = styled.div`
   overflow: hidden;
 `
 
-const DynamicInput = ({ value, onChange, ...rest }) => {
+const DynamicInputSufix = styled.div`
+  font-size: 72px;
+  line-height: 1;
+  opacity: 1;
+  right: 0;
+  position: absolute;
+`
+
+const ColorBlockWrapper = styled.div`
+  height: 72px;
+  max-width: ${props => props.wide ? 192 : 72}px;
+  width: 100%;
+  ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
+  flex-shrink: 1;
+`
+
+const ColorBlock = ({ wide, hasValidColor, ...rest }) => (
+  <ColorBlockWrapper wide={wide} hasValidColor={hasValidColor} {...rest} />
+)
+
+const DynamicInput = ({ value, onChange, color, sufix, ...rest }) => {
   return (
     <InputWrapper>
-      <DynamicInputField value={value} onChange={onChange} {...rest} />
+      <DynamicInputField color={color} value={value} onChange={onChange} {...rest} />
       <DynamicInputValue>
-        {value}
+        {value}{sufix}
       </DynamicInputValue>
+      <DynamicInputSufix>
+        {sufix}
+      </DynamicInputSufix>
     </InputWrapper>
   )
 }
@@ -212,18 +242,19 @@ class App extends Component {
         <TopSection>
           <ColorsSection>
             <InputsRow>
-              <DynamicInput value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
+              <DynamicInput color={this.state.mainColor} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
 
-              <DynamicInput value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' />
-
-              <InputSeparator>·</InputSeparator>
-
-              <DynamicInput value={this.state.mainColor} onChange={this.handleMainColorChange} />
+              <DynamicInput color={this.state.mainColor} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' />
 
               <InputSeparator>·</InputSeparator>
-              <DynamicInput value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
-              <DynamicInput value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' />
+
+              <DynamicInput color={this.state.mainColor} value={this.state.mainColor} onChange={this.handleMainColorChange} />
+
+              <InputSeparator>·</InputSeparator>
+              <DynamicInput color={this.state.mainColor} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
+              <DynamicInput color={this.state.mainColor} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' sufix='%' />
             </InputsRow>
+
             <ColorBlocksRow>
               {this.darkColorsList().map((color, index) => (
                 <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
