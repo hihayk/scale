@@ -9,35 +9,58 @@ const MainWrapper = styled.div`
   color: ${props => {
     const givenColor = isValidHex(props.color) ? props.color : errorColor
     console.log(givenColor)
-    return Color(givenColor).mix(Color('black'), 0.5).string()
+    return Color(givenColor).mix(Color('black'), 0.3).string()
   }};
+  padding: 40px 128px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`
+
+const ColorsSection = styled.div`
+  width: 100%;
+`
+
+const TopSection = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+`
+
+const FooterSection = styled.div`
+  a {
+    color: inherit;
+  }
 `
 
 const ColorBlocksRow = styled.div`
   display: flex;
+  width: 100%;
 `
 
 const InputsRow = styled.div`
   display: flex;
   margin-bottom: 64px;
+  width: 100%;
+
+  & > * {
+    margin-right: 24px;
+  }
 `
 
 const ColorBlock = styled.div`
   height: 72px;
-  width: ${props => props.wide ? 192 : 72}px;
+  max-width: ${props => props.wide ? 192 : 72}px;
+  width: 100%;
   ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
+  flex-shrink: 1;
 `
 
-const Input = styled.input`
+const InputSeparator = styled.div`
   color: inherit;
   font-size: 72px;
-  padding: 0;
-  border: 0;
-  width: ${props => props.width}px;
-
-  &:focus {
-    outline: none;
-  }
+  line-height: 1;
+  opacity: 0.4;
 `
 
 const isValidHex = (color) => {
@@ -53,6 +76,53 @@ const isValidHex = (color) => {
   }
 }
 
+const InputWrapper = styled.div`
+  position: relative;
+  width: auto;
+`
+
+const DynamicInputField = styled.input`
+  color: inherit;
+  font-size: 72px;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: 1;
+  padding: 0;
+  border: 0;
+  width: ${props => props.width}px;
+  margin-right: 16px;
+  position: absolute;
+  background-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+`
+
+const DynamicInputValue = styled.div`
+  font-size: 72px;
+  font-weight: inherit;
+  line-height: 1;
+  opacity: 1;
+  height: 1px;
+  overflow: hidden;
+`
+
+const DynamicInput = ({ value, onChange, ...rest }) => {
+  return (
+    <InputWrapper>
+      <DynamicInputField value={value} onChange={onChange} {...rest} />
+      <DynamicInputValue>
+        {value}
+      </DynamicInputValue>
+    </InputWrapper>
+  )
+}
+
 class App extends Component {
   constructor (props) {
     super(props)
@@ -62,7 +132,7 @@ class App extends Component {
 
       mainColor: '#CAA119',
 
-      lightColorsAmount: 4,
+      lightColorsAmount: 6,
       lightestAmount: 80
     }
     this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
@@ -82,25 +152,25 @@ class App extends Component {
 
   handleLightColorsAmountChange (e) {
     this.setState({
-      lightColorsAmount: e.target.value
+      lightColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
     })
   }
 
   handleLightestAmountChange (e) {
     this.setState({
-      lightestAmount: e.target.value
+      lightestAmount: Math.max(Math.min(e.target.value, 99), 0)
     })
   }
 
   handleDarkColorsAmountChange (e) {
     this.setState({
-      darkColorsAmount: e.target.value
+      darkColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
     })
   }
 
   handleDarkestAmountChange (e) {
     this.setState({
-      darkestAmount: e.target.value
+      darkestAmount: Math.max(Math.min(e.target.value, 99), 0)
     })
   }
 
@@ -139,30 +209,41 @@ class App extends Component {
   render () {
     return (
       <MainWrapper color={this.state.mainColor}>
-        <InputsRow>
-          <Input width={72} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
-          <Input width={128} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' />
+        <TopSection>
+          <ColorsSection>
+            <InputsRow>
+              <DynamicInput value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
 
-          <Input width={370} value={this.state.mainColor} onChange={this.handleMainColorChange} />
+              <DynamicInput value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' />
 
-          <Input width={72} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
-          <Input width={128} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' />
-        </InputsRow>
+              <InputSeparator>·</InputSeparator>
 
-        <ColorBlocksRow>
-          {this.darkColorsList().map((color, index) => (
-            <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
-          ))}
+              <DynamicInput value={this.state.mainColor} onChange={this.handleMainColorChange} />
 
-          <ColorBlock
-            wide
-            style={{ background: isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor }}
-            hasValidColor={isValidHex(this.state.mainColor)} />
+              <InputSeparator>·</InputSeparator>
+              <DynamicInput value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
+              <DynamicInput value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' />
+            </InputsRow>
+            <ColorBlocksRow>
+              {this.darkColorsList().map((color, index) => (
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
+              ))}
 
-          {this.lightColorsList().map((color, index) => (
-            <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
-          ))}
-        </ColorBlocksRow>
+              <ColorBlock
+                wide
+                style={{ background: isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor }}
+                hasValidColor={isValidHex(this.state.mainColor)} />
+
+              {this.lightColorsList().map((color, index) => (
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
+              ))}
+            </ColorBlocksRow>
+          </ColorsSection>
+        </TopSection>
+
+        <FooterSection>
+          Scale &nbsp; · &nbsp; made by <a href='http://hihayk.com' target='_blank'>Hayk</a>
+        </FooterSection>
       </MainWrapper>
     )
   }
