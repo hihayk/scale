@@ -8,7 +8,6 @@ const errorColor = 'transparent'
 const MainWrapper = styled.div`
   color: ${props => {
     const givenColor = isValidHex(props.color) ? props.color : errorColor
-    console.log(givenColor)
     return Color(givenColor).mix(Color('black'), 0.3).string()
   }};
   padding: 40px 128px;
@@ -78,7 +77,10 @@ const isValidHex = (color) => {
 const InputWrapper = styled.div`
   position: relative;
   width: auto;
-  border-bottom: 2px solid;
+  box-shadow: 0 4px ${props => {
+    const givenColor = isValidHex(props.color) ? props.color : errorColor
+    return Color(givenColor).mix(Color('black'), 0.4).fade(0.8).string()
+  }};
 `
 
 const DynamicInputField = styled.input`
@@ -92,6 +94,8 @@ const DynamicInputField = styled.input`
   width: 100%;
   margin-right: 16px;
   position: absolute;
+  top: 0;
+  height: 100%;
   background-color: transparent;
 
   &:focus {
@@ -122,26 +126,51 @@ const DynamicInputValue = styled.div`
 const DynamicInputSufix = styled.div`
   font-size: 72px;
   line-height: 1;
-  opacity: 1;
+  opacity: 0.4;
   right: 0;
   position: absolute;
+  top: 0;
+  height: 100%;
 `
 
 const ColorBlockWrapper = styled.div`
+`
+
+const ColorBlockCode = styled.div`
+  position: absolute;
+  top: 100%;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  transition: .2s;
+`
+
+const ColorBlockContainer = styled.div`
+  position: relative;
   height: 72px;
   max-width: ${props => props.wide ? 192 : 72}px;
   width: 100%;
   ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
   flex-shrink: 1;
+
+  &:not(:hover) .ColorBlockCode {
+    opacity: 0;
+    transition: .6s;
+  }
 `
 
-const ColorBlock = ({ wide, hasValidColor, ...rest }) => (
-  <ColorBlockWrapper wide={wide} hasValidColor={hasValidColor} {...rest} />
+const ColorBlock = ({ wide, hasValidColor, color, ...rest }) => (
+  <ColorBlockContainer wide={wide} hasValidColor={hasValidColor} {...rest}>
+    <ColorBlockWrapper {...rest} />
+
+    <ColorBlockCode className='ColorBlockCode'>
+      {hasValidColor ? Color(color).hex() : null}
+    </ColorBlockCode>
+  </ColorBlockContainer>
 )
 
 const DynamicInput = ({ value, onChange, color, sufix, ...rest }) => {
   return (
-    <InputWrapper>
+    <InputWrapper color={color}>
       <DynamicInputField color={color} value={value} onChange={onChange} {...rest} />
       <DynamicInputValue>
         {value}{sufix}
@@ -160,7 +189,7 @@ class App extends Component {
       darkColorsAmount: 3,
       darkestAmount: 50,
 
-      mainColor: '#CAA119',
+      mainColor: '#1D9A6C',
 
       lightColorsAmount: 6,
       lightestAmount: 80
@@ -251,29 +280,32 @@ class App extends Component {
               <DynamicInput color={this.state.mainColor} value={this.state.mainColor} onChange={this.handleMainColorChange} />
 
               <InputSeparator>·</InputSeparator>
+
               <DynamicInput color={this.state.mainColor} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
               <DynamicInput color={this.state.mainColor} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' sufix='%' />
             </InputsRow>
 
             <ColorBlocksRow>
               {this.darkColorsList().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} color={color} key={index} />
               ))}
 
               <ColorBlock
                 wide
                 style={{ background: isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor }}
-                hasValidColor={isValidHex(this.state.mainColor)} />
+                hasValidColor={isValidHex(this.state.mainColor)}
+                color={this.state.mainColor}
+              />
 
               {this.lightColorsList().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} />
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} color={color} key={index} />
               ))}
             </ColorBlocksRow>
           </ColorsSection>
         </TopSection>
 
         <FooterSection>
-          Scale &nbsp; · &nbsp; made by <a href='http://hihayk.com' target='_blank'>Hayk</a>
+          Scale &nbsp; · &nbsp; made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>
         </FooterSection>
       </MainWrapper>
     )
