@@ -74,13 +74,12 @@ const isValidHex = (color) => {
   }
 }
 
+const numberToHex = (number) => '#' + number
+
 const InputWrapper = styled.div`
   position: relative;
   width: auto;
-  box-shadow: 0 4px ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
-    return Color(givenColor).mix(Color('black'), 0.4).fade(0.8).string()
-  }};
+  height: 100%;
 `
 
 const DynamicInputField = styled.input`
@@ -108,7 +107,7 @@ const DynamicInputField = styled.input`
 
   &::selection {
     background: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
+    const givenColor = isValidHex(props.color) ? props.color : '#666'
     return Color(givenColor).mix(Color('white'), 0.8).string()
   }};
   }
@@ -123,6 +122,15 @@ const DynamicInputValue = styled.div`
   overflow: hidden;
 `
 
+const DynamicInputPrefix = styled.div`
+  font-size: 72px;
+  line-height: 1;
+  opacity: 0.4;
+  left: 0;
+  top: 0;
+  height: 100%;
+`
+
 const DynamicInputSufix = styled.div`
   font-size: 72px;
   line-height: 1;
@@ -131,6 +139,10 @@ const DynamicInputSufix = styled.div`
   position: absolute;
   top: 0;
   height: 100%;
+`
+
+const DynamicInputRoot = styled.div`
+  display: flex;
 `
 
 const ColorBlockWrapper = styled.div`
@@ -168,17 +180,22 @@ const ColorBlock = ({ wide, hasValidColor, color, ...rest }) => (
   </ColorBlockContainer>
 )
 
-const DynamicInput = ({ value, onChange, color, sufix, ...rest }) => {
+const DynamicInput = ({ value, onChange, color, prefix, sufix, ...rest }) => {
   return (
-    <InputWrapper color={color}>
-      <DynamicInputField color={color} value={value} onChange={onChange} {...rest} />
-      <DynamicInputValue>
-        {value}{sufix}
-      </DynamicInputValue>
-      <DynamicInputSufix>
-        {sufix}
-      </DynamicInputSufix>
-    </InputWrapper>
+    <DynamicInputRoot>
+      <DynamicInputPrefix>
+        {prefix}
+      </DynamicInputPrefix>
+      <InputWrapper color={color}>
+        <DynamicInputField color={color} value={value} onChange={onChange} {...rest} />
+        <DynamicInputValue>
+          {value}{sufix}
+        </DynamicInputValue>
+        <DynamicInputSufix>
+          {sufix}
+        </DynamicInputSufix>
+      </InputWrapper>
+    </DynamicInputRoot>
   )
 }
 
@@ -189,7 +206,7 @@ class App extends Component {
       darkColorsAmount: 3,
       darkestAmount: 50,
 
-      mainColor: '#1D9A6C',
+      mainColor: '1D9A6C',
 
       lightColorsAmount: 6,
       lightestAmount: 80
@@ -204,8 +221,17 @@ class App extends Component {
   }
 
   handleMainColorChange (e) {
+    let typedColorFiltered
+    const typedColor = e.target.value
+
+    if (typedColor[0] === '#') {
+      typedColorFiltered = typedColor.substr(1, typedColor.length)
+    } else {
+      typedColorFiltered = typedColor
+    }
+
     this.setState({
-      mainColor: e.target.value
+      mainColor: typedColorFiltered
     })
   }
 
@@ -235,11 +261,11 @@ class App extends Component {
 
   lightColorsList () {
     const colorsList = []
-    const givenColor = isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor
+    const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
 
     let step
     for (step = 0; step < this.state.lightColorsAmount; step++) {
-      if (isValidHex(this.state.mainColor)) {
+      if (isValidHex(numberToHex(this.state.mainColor))) {
         colorsList.push(Color(givenColor).mix(Color('white'), (this.state.lightestAmount / 100) * (step + 1) / this.state.lightColorsAmount).string())
       } else {
         colorsList.push(errorColor)
@@ -251,11 +277,11 @@ class App extends Component {
 
   darkColorsList () {
     const colorsList = []
-    const givenColor = isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor
+    const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
 
     let step
     for (step = 0; step < this.state.darkColorsAmount; step++) {
-      if (isValidHex(this.state.mainColor)) {
+      if (isValidHex(numberToHex(this.state.mainColor))) {
         colorsList.push(Color(givenColor).mix(Color('black'), (this.state.darkestAmount / 100) * (step + 1) / this.state.darkColorsAmount).string())
       } else {
         colorsList.push(errorColor)
@@ -267,38 +293,38 @@ class App extends Component {
 
   render () {
     return (
-      <MainWrapper color={this.state.mainColor}>
+      <MainWrapper color={numberToHex(this.state.mainColor)}>
         <TopSection>
           <ColorsSection>
             <InputsRow>
-              <DynamicInput color={this.state.mainColor} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
 
-              <DynamicInput color={this.state.mainColor} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' />
-
-              <InputSeparator>·</InputSeparator>
-
-              <DynamicInput color={this.state.mainColor} value={this.state.mainColor} onChange={this.handleMainColorChange} />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' />
 
               <InputSeparator>·</InputSeparator>
 
-              <DynamicInput color={this.state.mainColor} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
-              <DynamicInput color={this.state.mainColor} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' sufix='%' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} prefix='#' />
+
+              <InputSeparator>·</InputSeparator>
+
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' sufix='%' />
             </InputsRow>
 
             <ColorBlocksRow>
               {this.darkColorsList().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} color={color} key={index} />
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
               ))}
 
               <ColorBlock
                 wide
-                style={{ background: isValidHex(this.state.mainColor) ? this.state.mainColor : errorColor }}
-                hasValidColor={isValidHex(this.state.mainColor)}
-                color={this.state.mainColor}
+                style={{ background: isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor }}
+                hasValidColor={isValidHex(numberToHex(this.state.mainColor))}
+                color={numberToHex(this.state.mainColor)}
               />
 
               {this.lightColorsList().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(this.state.mainColor)} color={color} key={index} />
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
               ))}
             </ColorBlocksRow>
           </ColorsSection>
