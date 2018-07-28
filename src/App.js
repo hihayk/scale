@@ -203,21 +203,27 @@ class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      darkColorsAmount: 3,
+      darkColorsAmount: 4,
       darkestAmount: 50,
 
       mainColor: '1D9A6C',
 
-      lightColorsAmount: 8,
+      lightColorsAmount: 6,
       lightestAmount: 80
     }
     this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
     this.handleDarkestAmountChange = this.handleDarkestAmountChange.bind(this)
 
     this.handleMainColorChange = this.handleMainColorChange.bind(this)
+    this.handleMainColorBlur = this.handleMainColorBlur.bind(this)
 
     this.handleLightColorsAmountChange = this.handleLightColorsAmountChange.bind(this)
     this.handleLightestAmountChange = this.handleLightestAmountChange.bind(this)
+
+    this.handleDarkColorsAmountBlur = this.handleDarkColorsAmountBlur.bind(this)
+    this.handleDarkestAmountBlur = this.handleDarkestAmountBlur.bind(this)
+    this.handleLightColorsAmountBlur = this.handleLightColorsAmountBlur.bind(this)
+    this.handleLightestAmountBlur = this.handleLightestAmountBlur.bind(this)
   }
 
   handleMainColorChange (e) {
@@ -235,28 +241,68 @@ class App extends Component {
     })
   }
 
+  handleMainColorBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        mainColor: '666'
+      })
+    }
+  }
+
   handleDarkColorsAmountChange (e) {
     this.setState({
-      darkColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
+      darkColorsAmount: e.target.value
     })
   }
 
   handleDarkestAmountChange (e) {
     this.setState({
-      darkestAmount: Math.max(Math.min(e.target.value, 99), 0)
+      darkestAmount: e.target.value
     })
   }
 
   handleLightColorsAmountChange (e) {
     this.setState({
-      lightColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
+      lightColorsAmount: e.target.value
     })
   }
 
   handleLightestAmountChange (e) {
     this.setState({
-      lightestAmount: Math.max(Math.min(e.target.value, 99), 0)
+      lightestAmount: e.target.value
     })
+  }
+
+  handleDarkColorsAmountBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        darkColorsAmount: 0
+      })
+    }
+  }
+
+  handleDarkestAmountBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        darkestAmount: 0
+      })
+    }
+  }
+
+  handleLightColorsAmountBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        lightColorsAmount: 0
+      })
+    }
+  }
+
+  handleLightestAmountBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        lightestAmount: 0
+      })
+    }
   }
 
   getColorsList (colorsAmount, colorsShiftAmount, mixColor) {
@@ -281,17 +327,17 @@ class App extends Component {
         <TopSection>
           <ColorsSection>
             <InputsRow>
-              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
-              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' onBlur={this.handleDarkColorsAmountBlur} />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' max={99} onBlur={this.handleDarkestAmountBlur} />
 
               <InputSeparator>·</InputSeparator>
 
-              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} prefix='#' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlur} prefix='#' />
 
               <InputSeparator>·</InputSeparator>
 
-              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} type='number' />
-              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} type='number' sufix='%' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} onBlur={this.handleLightColorsAmountBlur} type='number' />
+              <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} onBlur={this.handleLightestAmountBlur} type='number' sufix='%' />
             </InputsRow>
 
             <ColorBlocksRow>
