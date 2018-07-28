@@ -259,36 +259,20 @@ class App extends Component {
     })
   }
 
-  lightColorsList () {
+  getColorsList (colorsAmount, colorsShiftAmount, mixColor) {
     const colorsList = []
     const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
 
     let step
-    for (step = 0; step < this.state.lightColorsAmount; step++) {
+    for (step = 0; step < colorsAmount; step++) {
       if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).mix(Color('white'), (this.state.lightestAmount / 100) * (step + 1) / this.state.lightColorsAmount).string())
+        colorsList.push(Color(givenColor).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
       } else {
         colorsList.push(errorColor)
       }
     }
 
     return colorsList
-  }
-
-  darkColorsList () {
-    const colorsList = []
-    const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
-
-    let step
-    for (step = 0; step < this.state.darkColorsAmount; step++) {
-      if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).mix(Color('black'), (this.state.darkestAmount / 100) * (step + 1) / this.state.darkColorsAmount).string())
-      } else {
-        colorsList.push(errorColor)
-      }
-    }
-
-    return colorsList.reverse()
   }
 
   render () {
@@ -311,7 +295,7 @@ class App extends Component {
             </InputsRow>
 
             <ColorBlocksRow>
-              {this.darkColorsList().map((color, index) => (
+              {this.getColorsList(this.state.darkColorsAmount, this.state.darkestAmount, 'black').reverse().map((color, index) => (
                 <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
               ))}
 
@@ -322,7 +306,7 @@ class App extends Component {
                 color={numberToHex(this.state.mainColor)}
               />
 
-              {this.lightColorsList().map((color, index) => (
+              {this.getColorsList(this.state.lightColorsAmount, this.state.lightestAmount, 'white').map((color, index) => (
                 <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
               ))}
             </ColorBlocksRow>
