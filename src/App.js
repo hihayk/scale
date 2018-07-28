@@ -208,7 +208,7 @@ class App extends Component {
 
       mainColor: '1D9A6C',
 
-      lightColorsAmount: 6,
+      lightColorsAmount: 8,
       lightestAmount: 80
     }
     this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
@@ -235,18 +235,6 @@ class App extends Component {
     })
   }
 
-  handleLightColorsAmountChange (e) {
-    this.setState({
-      lightColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
-    })
-  }
-
-  handleLightestAmountChange (e) {
-    this.setState({
-      lightestAmount: Math.max(Math.min(e.target.value, 99), 0)
-    })
-  }
-
   handleDarkColorsAmountChange (e) {
     this.setState({
       darkColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
@@ -256,6 +244,18 @@ class App extends Component {
   handleDarkestAmountChange (e) {
     this.setState({
       darkestAmount: Math.max(Math.min(e.target.value, 99), 0)
+    })
+  }
+
+  handleLightColorsAmountChange (e) {
+    this.setState({
+      lightColorsAmount: Math.max(Math.min(e.target.value, 24), 0)
+    })
+  }
+
+  handleLightestAmountChange (e) {
+    this.setState({
+      lightestAmount: Math.max(Math.min(e.target.value, 99), 0)
     })
   }
 
@@ -298,7 +298,6 @@ class App extends Component {
           <ColorsSection>
             <InputsRow>
               <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' />
-
               <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' />
 
               <InputSeparator>·</InputSeparator>
