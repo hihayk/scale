@@ -15,6 +15,10 @@ const MainWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 720px) {
+    padding: 32px;
+  }
 `
 
 const ColorsSection = styled.div`
@@ -53,6 +57,10 @@ const InputsRow = styled.div`
   & > * {
     margin-right: 24px;
   }
+
+  @media (max-width: 720px) {
+    flex-direction: column;
+  }
 `
 
 const InputSeparator = styled.div`
@@ -60,6 +68,10 @@ const InputSeparator = styled.div`
   font-size: 72px;
   line-height: 1;
   opacity: 0.4;
+
+  @media (max-width: 720px) {
+    display: none;
+  }
 `
 
 const isValidHex = (color) => {
@@ -134,6 +146,10 @@ const DynamicInputValue = styled.div`
 
 const DynamicInputRoot = styled.div`
   display: flex;
+
+  @media (max-width: 720px) {
+    height: 72px;
+  }
 `
 
 const ColorBlockWrapper = styled.div`
