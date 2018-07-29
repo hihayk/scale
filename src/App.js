@@ -18,6 +18,7 @@ const MainWrapper = styled.div`
 
   @media (max-width: 720px) {
     padding: 32px;
+    min-height: calc(100vh - 40px);
   }
 `
 
@@ -167,6 +168,7 @@ const ColorBlockContainer = styled.div`
   position: relative;
   height: 72px;
   max-width: ${props => props.wide ? 192 : 72}px;
+  ${props => props.wide && 'min-width: 192px'};
   width: 100%;
   ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
   flex-shrink: 1;
@@ -175,6 +177,10 @@ const ColorBlockContainer = styled.div`
   &:not(:hover) .ColorBlockCode {
     opacity: 0;
     transition: .6s;
+  }
+
+  @media (max-width: 720px) {
+    ${props => props.wide && 'min-width: 144px'};
   }
 `
 
@@ -306,6 +312,15 @@ class App extends Component {
 
   componentDidUpdate () {
     this.updateHash()
+    this.updateThemeColor()
+  }
+
+  componentDidMount () {
+    this.updateThemeColor()
+  }
+
+  updateThemeColor () {
+    document.getElementById('themeMetaTag').setAttribute('content', numberToHex(this.state.mainColor))
   }
 
   updateHash () {
