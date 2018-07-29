@@ -6,21 +6,11 @@ import styled from 'styled-components'
 const errorColor = 'transparent'
 
 const MainWrapper = styled.div`
-  color: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
-    return Color(givenColor).mix(Color('black'), 0.3).string()
-  }};
+  color: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('black'), 0.3).string() : errorColor};
   padding: 40px 128px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  & > *::selection {
-    background: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
-    return Color(givenColor).mix(Color('white'), 0.8).string()
-  }};
-  }
 `
 
 const ColorsSection = styled.div`
@@ -104,6 +94,11 @@ const DynamicInputField = styled.input`
   height: 100%;
   background-color: transparent;
   appearance: textfield;
+  margin: 0;
+  ${props => props.isDisabled && `
+    user-select: none;
+    opacity: 0.4;
+  `};
 
   &:focus {
     outline: none;
@@ -115,11 +110,12 @@ const DynamicInputField = styled.input`
     margin: 0;
   }
 
+  &::-moz-selection {
+    background: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('white'), 0.8).string() : '#666'};
+  }
+
   &::selection {
-    background: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : '#666'
-    return Color(givenColor).mix(Color('white'), 0.8).string()
-  }};
+    background: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('white'), 0.8).string() : '#666'};
   }
 `
 
@@ -130,25 +126,6 @@ const DynamicInputValue = styled.div`
   opacity: 1;
   height: 1px;
   overflow: hidden;
-`
-
-const DynamicInputPrefix = styled.div`
-  font-size: 72px;
-  line-height: 1;
-  opacity: 0.4;
-  left: 0;
-  top: 0;
-  height: 100%;
-`
-
-const DynamicInputSufix = styled.div`
-  font-size: 72px;
-  line-height: 1;
-  opacity: 0.4;
-  right: 0;
-  position: absolute;
-  top: 0;
-  height: 100%;
 `
 
 const DynamicInputRoot = styled.div`
@@ -193,17 +170,25 @@ const ColorBlock = ({ wide, hasValidColor, color, ...rest }) => (
 const DynamicInput = ({ value, onChange, color, prefix, sufix, ...rest }) => {
   return (
     <DynamicInputRoot>
-      <DynamicInputPrefix>
-        {prefix}
-      </DynamicInputPrefix>
+      <InputWrapper color={color}>
+        <DynamicInputField color={color} value={prefix} type='text' isDisabled tabIndex={-1} />
+        <DynamicInputValue>
+          {prefix}
+        </DynamicInputValue>
+      </InputWrapper>
+
       <InputWrapper color={color}>
         <DynamicInputField color={color} value={value} onChange={onChange} {...rest} />
         <DynamicInputValue>
-          {value}{sufix}
+          {value}
         </DynamicInputValue>
-        <DynamicInputSufix>
+      </InputWrapper>
+
+      <InputWrapper color={color}>
+        <DynamicInputField color={color} value={sufix} type='text' isDisabled tabIndex={-1} />
+        <DynamicInputValue>
           {sufix}
-        </DynamicInputSufix>
+        </DynamicInputValue>
       </InputWrapper>
     </DynamicInputRoot>
   )
