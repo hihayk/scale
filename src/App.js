@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import './App.css'
 import Color from 'color'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 const errorColor = 'transparent'
 
@@ -153,6 +154,7 @@ const ColorBlockContainer = styled.div`
   width: 100%;
   ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
   flex-shrink: 1;
+  cursor: pointer;
 
   &:not(:hover) .ColorBlockCode {
     opacity: 0;
@@ -160,21 +162,79 @@ const ColorBlockContainer = styled.div`
   }
 `
 
-const ColorBlock = ({ wide, hasValidColor, color, ...rest }) => (
-  <ColorBlockContainer wide={wide} hasValidColor={hasValidColor} {...rest}>
-    <ColorBlockWrapper {...rest} />
+const copyAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  30% {
+    opacity: 0.5;
+  }
+  70% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+`
 
-    <ColorBlockCode className='ColorBlockCode'>
-      {hasValidColor ? Color(color).hex() : null}
-    </ColorBlockCode>
-  </ColorBlockContainer>
-)
+const CopiedText = styled.div`
+  animation: ${copyAnimation} 0.8s;
+  opacity: 0;
+`
+
+class ColorBlock extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      copied: false
+    }
+    this.handleCopied = this.handleCopied.bind(this)
+  }
+
+  handleCopied () {
+    this.setState({
+      copied: true
+    })
+    this.delayCopyFalseState()
+  }
+
+  delayCopyFalseState () {
+    setTimeout(() => {
+      this.setState({
+        copied: false
+      })
+    }, 800)
+  }
+
+  render () {
+    const { wide, hasValidColor, color, ...rest } = this.props
+
+    return (
+      <CopyToClipboard text={hasValidColor ? Color(color).hex() : null}>
+        <ColorBlockContainer wide={wide} hasValidColor={hasValidColor} {...rest} onClick={this.handleCopied}>
+          <ColorBlockWrapper {...rest} />
+
+          <ColorBlockCode className='ColorBlockCode'>
+            {hasValidColor ? Color(color).hex() : null}
+            {this.state.copied && (
+              <CopiedText copied={this.state.copied}>
+                {Color(color).hex()}
+              </CopiedText>
+            )}
+          </ColorBlockCode>
+        </ColorBlockContainer>
+      </CopyToClipboard>
+    )
+  }
+}
 
 const DynamicInput = ({ value, onChange, color, prefix, sufix, ...rest }) => {
   return (
     <DynamicInputRoot>
       <InputWrapper color={color}>
-        <DynamicInputField color={color} value={prefix} type='text' isDisabled tabIndex={-1} />
+        <DynamicInputField color={color} value={prefix} type='text' readOnly isDisabled tabIndex={-1} />
         <DynamicInputValue>
           {prefix}
         </DynamicInputValue>
@@ -188,7 +248,7 @@ const DynamicInput = ({ value, onChange, color, prefix, sufix, ...rest }) => {
       </InputWrapper>
 
       <InputWrapper color={color}>
-        <DynamicInputField color={color} value={sufix} type='text' isDisabled tabIndex={-1} />
+        <DynamicInputField color={color} value={sufix} type='text' readOnly isDisabled tabIndex={-1} />
         <DynamicInputValue>
           {sufix}
         </DynamicInputValue>
