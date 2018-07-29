@@ -396,7 +396,7 @@ class App extends Component {
         </TopSection>
 
         <FooterSection>
-          <a href='/'><h1>Scale</h1></a> &nbsp; · &nbsp; made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>
+          <a href='/scale'><h1>Scale</h1></a> &nbsp; · &nbsp; made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>
         </FooterSection>
       </MainWrapper>
     )
