@@ -6,7 +6,10 @@ import styled from 'styled-components'
 const errorColor = 'transparent'
 
 const MainWrapper = styled.div`
-  color: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('black'), 0.3).string() : errorColor};
+  color: ${props => {
+    const givenColor = isValidHex(props.color) ? props.color : errorColor
+    return Color(givenColor).mix(Color('black'), 0.3).string()
+  }};
   padding: 40px 128px;
   min-height: 100vh;
   display: flex;
