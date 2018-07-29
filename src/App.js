@@ -96,13 +96,16 @@ const DynamicInputField = styled.input`
   top: 0;
   height: 100%;
   background-color: transparent;
+  appearance: textfield;
 
   &:focus {
     outline: none;
   }
 
+  &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
+    margin: 0;
   }
 
   &::selection {
