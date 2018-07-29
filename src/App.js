@@ -205,7 +205,7 @@ const DynamicInput = ({ value, onChange, color, prefix, sufix, ...rest }) => {
 class App extends Component {
   constructor (props) {
     super(props)
-    this.state = {
+    const defaultState = {
       darkColorsAmount: 4,
       darkestAmount: 50,
 
@@ -214,6 +214,10 @@ class App extends Component {
       lightColorsAmount: 6,
       lightestAmount: 80
     }
+    const hashState = this.getHashObject()
+
+    this.state = hashState || defaultState
+
     this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
     this.handleDarkestAmountChange = this.handleDarkestAmountChange.bind(this)
 
@@ -227,6 +231,28 @@ class App extends Component {
     this.handleDarkestAmountBlur = this.handleDarkestAmountBlur.bind(this)
     this.handleLightColorsAmountBlur = this.handleLightColorsAmountBlur.bind(this)
     this.handleLightestAmountBlur = this.handleLightestAmountBlur.bind(this)
+  }
+
+  componentDidUpdate () {
+    this.updateHash()
+  }
+
+  updateHash () {
+    window.location.hash = encodeURI(JSON.stringify(this.state))
+  }
+
+  getHash () {
+    const hash = decodeURI(window.location.hash)
+
+    if (hash) {
+      return hash.substr(1, hash.length)
+    }
+
+    return null
+  }
+
+  getHashObject () {
+    return JSON.parse(this.getHash())
   }
 
   handleMainColorChange (e) {
