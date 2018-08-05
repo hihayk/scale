@@ -144,8 +144,9 @@ const InputsRow = styled.div`
 `
 
 const InputsRowItem = styled.div`
-  margin-right: 64px;
+  margin-right: 48px;
   width: ${props => props.wide ? 192 : 96}px;
+  flex-shrink: 0;
 `
 
 const isValidHex = (color) => {
