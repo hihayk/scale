@@ -378,29 +378,30 @@ const DynamicInput = ({ value, onChange, color, prefix, sufix, withSlider, withR
 
 const initialColor = '1D9A6C'
 
+const defaultState = {
+  darkColorsAmount: 4,
+  lightColorsAmount: 6,
+  
+  darkestAmount: 50,
+  lightestAmount: 80,
+  
+  darkColorsMixRotate: -51,
+  lightColorsMixRotate: 67,
+
+  lightSaturation: 20,
+  darkSaturation: 14,
+
+  mainColor: initialColor,
+  r: Color(numberToHex(initialColor)).rgb().red(),
+  g: Color(numberToHex(initialColor)).rgb().green(),
+  b: Color(numberToHex(initialColor)).rgb().blue()
+}
+
 class App extends Component {
   constructor (props) {
     super(props)
-    const defaultState = {
-      darkColorsAmount: 4,
-      darkestAmount: 50,
-      darkColorsMixRotate: -51,
 
-      mainColor: initialColor,
-      r: Color(numberToHex(initialColor)).rgb().red(),
-      g: Color(numberToHex(initialColor)).rgb().green(),
-      b: Color(numberToHex(initialColor)).rgb().blue(),
-
-      lightColorsAmount: 6,
-      lightestAmount: 80,
-      lightColorsMixRotate: 67,
-
-      lightSaturation: 20,
-      darkSaturation: 14
-    }
-    const hashState = this.getHashObject()
-
-    this.state = hashState || defaultState
+    this.state = this.getHash() || defaultState
 
     this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
     this.handleDarkestAmountChange = this.handleDarkestAmountChange.bind(this)
@@ -440,26 +441,33 @@ class App extends Component {
     this.updateThemeColor()
   }
 
-  updateThemeColor () {
-    document.getElementById('themeMetaTag').setAttribute('content', numberToHex(this.state.mainColor))
-  }
-
   updateHash () {
-    window.location.hash = encodeURI(JSON.stringify(this.state))
+    window.location.hash = encodeURI(Object.values(this.state).join('_'))
   }
 
   getHash () {
     const hash = decodeURI(window.location.hash)
 
     if (hash) {
-      return hash.substr(1, hash.length)
+
+      const stateKeysArray =  Object.keys(defaultState)
+      const hashValuesArray = hash.substr(1, hash.length).split(['_'])
+
+      const getHashObject = () => {
+        var hashObject = {}
+        stateKeysArray.forEach((key, i) => hashObject[key] = hashValuesArray[i])
+
+        return hashObject
+      }
+
+      return getHashObject()
     }
 
     return null
   }
 
-  getHashObject () {
-    return JSON.parse(this.getHash())
+  updateThemeColor () {
+    document.getElementById('themeMetaTag').setAttribute('content', numberToHex(this.state.mainColor))
   }
 
   handleMainColorChange (e) {
