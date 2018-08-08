@@ -11,7 +11,7 @@ const MainWrapper = styled.div`
     const givenColor = isValidHex(props.color) ? props.color : errorColor
     return Color(givenColor).mix(Color('black'), 0.3).string()
   }};
-  padding: 40px 96px;
+  padding: 40px 80px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -145,7 +145,7 @@ const InputsRow = styled.div`
 `
 
 const InputsRowItem = styled.div`
-  margin-right: 48px;
+  margin-right: 40px;
   width: ${props => props.wide ? 192 : 96}px;
   flex-shrink: 0;
 `
@@ -154,7 +154,7 @@ const InputsRowItemSeparataor = styled.div`
   margin-right: 48px;
   display: block;
   width: 1px;
-  background-color: red;
+  flex-shrink: 0;
 `
 
 const isValidHex = (color) => {
@@ -395,8 +395,8 @@ class App extends Component {
       lightestAmount: 80,
       lightColorsMixRotate: 67,
 
-      lightSaturation: 0,
-      darkSaturation: 0
+      lightSaturation: 20,
+      darkSaturation: 14
     }
     const hashState = this.getHashObject()
 
