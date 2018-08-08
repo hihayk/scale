@@ -131,12 +131,13 @@ const FooterSection = styled.div`
 const ColorBlocksRow = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: 128px;
+  margin-bottom: 88px;
 `
 
 const InputsRow = styled.div`
   display: flex;
   width: 100%;
+  margin-bottom: 64px;
 
   @media (max-width: 720px) {
     flex-direction: column;
@@ -147,6 +148,13 @@ const InputsRowItem = styled.div`
   margin-right: 48px;
   width: ${props => props.wide ? 192 : 96}px;
   flex-shrink: 0;
+`
+
+const InputsRowItemSeparataor = styled.div`
+  margin-right: 48px;
+  display: block;
+  width: 1px;
+  background-color: red;
 `
 
 const isValidHex = (color) => {
@@ -385,7 +393,10 @@ class App extends Component {
 
       lightColorsAmount: 6,
       lightestAmount: 80,
-      lightColorsMixRotate: 67
+      lightColorsMixRotate: 67,
+
+      lightSaturation: 0,
+      darkSaturation: 0
     }
     const hashState = this.getHashObject()
 
@@ -412,6 +423,12 @@ class App extends Component {
     this.handleRChange = this.handleRChange.bind(this)
     this.handleGChange = this.handleGChange.bind(this)
     this.handleBChange = this.handleBChange.bind(this)
+    
+    this.handleLightSaturationChange = this.handleLightSaturationChange.bind(this)
+    this.handleDarkSaturationChange = this.handleDarkSaturationChange.bind(this)
+    
+    this.handleLightSaturationBlur = this.handleLightSaturationBlur.bind(this)
+    this.handleDarkSaturationBlur = this.handleDarkSaturationBlur.bind(this)
   }
 
   componentDidUpdate () {
@@ -554,6 +571,22 @@ class App extends Component {
     }
   }
 
+  handleLightSaturationBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        lightSaturation: 0
+      })
+    }
+  }
+
+  handleDarkSaturationBlur (e) {
+    if (!e.target.value) {
+      this.setState({
+        darkSaturation: 0
+      })
+    }
+  }
+
   rgbToMainColor () {
     setTimeout(() => {
       this.setState({
@@ -593,14 +626,26 @@ class App extends Component {
     this.rgbToMainColor()
   }
 
-  getColorsList (colorsAmount, colorsShiftAmount, mixColor, rotate) {
+  handleLightSaturationChange (e) {
+    this.setState({
+      lightSaturation: e.target.value
+    })
+  }
+
+  handleDarkSaturationChange (e) {
+    this.setState({
+      darkSaturation: e.target.value
+    })
+  }
+
+  getColorsList (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation) {
     const colorsList = []
     const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
 
     let step
     for (step = 0; step < colorsAmount; step++) {
       if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
+        colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
       } else {
         colorsList.push(errorColor)
       }
@@ -614,34 +659,7 @@ class App extends Component {
       <MainWrapper color={numberToHex(this.state.mainColor)}>
         <TopSection>
           <ColorsSection>
-            <ColorBlocksRow>
-              {this.getColorsList(this.state.darkColorsAmount, this.state.darkestAmount, 'black', this.state.darkColorsMixRotate).reverse().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-
-              <ColorBlock
-                wide
-                style={{ background: isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor }}
-                hasValidColor={isValidHex(numberToHex(this.state.mainColor))}
-                color={numberToHex(this.state.mainColor)}
-              />
-
-              {this.getColorsList(this.state.lightColorsAmount, this.state.lightestAmount, 'white', this.state.lightColorsMixRotate).map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-            </ColorBlocksRow>
-
             <InputsRow>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' min={0} max={99} onBlur={this.handleDarkestAmountBlur} withSlider label='Darkness' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsMixRotate} onChange={this.handleDarkColorsMixRotate} onBlur={this.handleDarkColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Dark color hue rotate' />
-              </InputsRowItem>
-
               <InputsRowItem wide>
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlurhandleMainColorBlur} prefix='#' label='Color' />
 
@@ -664,6 +682,44 @@ class App extends Component {
                   <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.b} onChange={this.handleBChange} />
                 </SliderWrapper>
               </InputsRowItem>
+            </InputsRow>
+
+            <ColorBlocksRow>
+              {this.getColorsList(this.state.darkColorsAmount, this.state.darkestAmount, 'black', this.state.darkColorsMixRotate, this.state.darkSaturation).reverse().map((color, index) => (
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
+              ))}
+
+              <ColorBlock
+                wide
+                style={{ background: isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor }}
+                hasValidColor={isValidHex(numberToHex(this.state.mainColor))}
+                color={numberToHex(this.state.mainColor)}
+              />
+
+              {this.getColorsList(this.state.lightColorsAmount, this.state.lightestAmount, 'white', this.state.lightColorsMixRotate, this.state.lightSaturation).map((color, index) => (
+                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
+              ))}
+            </ColorBlocksRow>
+
+            <InputsRow>
+              <InputsRowItem>
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
+              </InputsRowItem>
+              <InputsRowItem>
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' min={0} max={99} onBlur={this.handleDarkestAmountBlur} withSlider label='Darkness' />
+              </InputsRowItem>
+              <InputsRowItem>
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsMixRotate} onChange={this.handleDarkColorsMixRotate} onBlur={this.handleDarkColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Dark colors hue angle' />
+              </InputsRowItem>
+              <InputsRowItem>
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkSaturation} onChange={this.handleDarkSaturationChange} onBlur={this.handleDarkSaturationBlur} min={-100} max={100} type='number' sufix='%' withSlider label='Dark colors saturation' />
+              </InputsRowItem>
+
+              <InputsRowItemSeparataor
+                style={{
+                  background: isValidHex(numberToHex(this.state.mainColor)) ? Color(numberToHex(this.state.mainColor)).mix(Color('black'), 0.3).fade(0.7).string() : '#ddd'
+                }}
+              />
 
               <InputsRowItem>
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} min={0} onBlur={this.handleLightColorsAmountBlur} type='number' label='Light colors amount' />
@@ -672,7 +728,10 @@ class App extends Component {
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} onBlur={this.handleLightestAmountBlur} min={0} max={99} type='number' sufix='%' withSlider label='Lightness' />
               </InputsRowItem>
               <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsMixRotate} onChange={this.handleLightColorsMixRotate} onBlur={this.handleLightColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Light color hue rotate' />
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsMixRotate} onChange={this.handleLightColorsMixRotate} onBlur={this.handleLightColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Light colors hue angle' />
+              </InputsRowItem>
+              <InputsRowItem>
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightSaturation} onChange={this.handleLightSaturationChange} onBlur={this.handleLightSaturationBlur} min={-100} max={100} type='number' sufix='%' withSlider label='Light colors saturation' />
               </InputsRowItem>
             </InputsRow>
           </ColorsSection>
