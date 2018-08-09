@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import './App.css'
 import Color from 'color'
-import styled, { css, keyframes } from 'styled-components'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import styled from 'styled-components'
+import DynamicInput from './components/dynamic-input.js'
+import Slider from './components/slider.js'
+import ColorBlock from './components/color-block.js'
+import { isValidHex } from './utils.js'
 
 const errorColor = 'transparent'
 
@@ -19,75 +22,6 @@ const MainWrapper = styled.div`
   @media (max-width: 720px) {
     padding: 32px;
     min-height: calc(100vh - 40px);
-  }
-`
-
-const sliderThumbStyles = css`
-  height: 10px;
-  width: 10px;
-  border-radius: 50%;
-  background: #666;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -4px;
-`
-
-const sliderTrackStyles = css`
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #D8D8D8;
-  border-radius: 2px;
-`
-
-const Slider = styled.input`
-  width: 96px;
-  height: 12px;
-  -webkit-appearance: none;
-  margin: 0;
-  display: block;
-  cursor: pointer;
-  margin-top: 8px;
-  margin-bottom: 8px;
-
-  &:focus {
-    outline: none;
-  }
-  &::-webkit-slider-runnable-track {
-    ${sliderTrackStyles}
-  }
-  &::-webkit-slider-thumb {
-    ${sliderThumbStyles}
-  }
-  &:focus::-webkit-slider-runnable-track {
-    background: #aaa;
-  }
-  &::-moz-range-track {
-    ${sliderTrackStyles}
-  }
-  &::-moz-range-thumb {
-    ${sliderThumbStyles}
-  }
-  &::-ms-track {
-    ${sliderTrackStyles}
-  }
-  &::-ms-fill-lower {
-    background: #D8D8D8;
-    border-radius: 2px;
-  }
-  &::-ms-fill-upper {
-    background: #D8D8D8;
-    border-radius: 2px;
-  }
-  &::-ms-thumb {
-    ${sliderThumbStyles}
-  }
-  &:focus::-ms-fill-lower {
-    background: #D8D8D8;
-  }
-  &:focus::-ms-fill-upper {
-    background: #D8D8D8;
   }
 `
 
@@ -157,234 +91,18 @@ const InputsRowItemSeparataor = styled.div`
   flex-shrink: 0;
 `
 
-const isValidHex = (color) => {
-  if (!color || typeof color !== 'string') return false
-
-  if (color.substring(0, 1) === '#') color = color.substring(1)
-
-  switch (color.length) {
-    case 3: return /^[0-9A-F]{3}$/i.test(color)
-    case 6: return /^[0-9A-F]{6}$/i.test(color)
-    case 8: return /^[0-9A-F]{8}$/i.test(color)
-    default: return false
-  }
-}
-
 const numberToHex = (number) => '#' + number
 const hexToNumber = (number) => number.substr(1, number.length)
-
-const InputWrapper = styled.div`
-  position: relative;
-  width: auto;
-  height: 100%;
-`
-
-const DynamicInputField = styled.input`
-  color: inherit;
-  font-size: 40px;
-  font-family: inherit;
-  font-weight: inherit;
-  line-height: 1;
-  padding: 0;
-  border: 0;
-  width: 100%;
-  margin-right: 16px;
-  position: absolute;
-  top: 0;
-  height: 100%;
-  background-color: transparent;
-  appearance: textfield;
-  margin: 0;
-  ${props => props.isDisabled && `
-    user-select: none;
-    opacity: 0.4;
-  `};
-
-  &:focus {
-    outline: none;
-  }
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &::-moz-selection {
-    background: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('white'), 0.8).string() : '#666'};
-  }
-
-  &::selection {
-    background: ${props => isValidHex(props.color) ? Color(props.color).mix(Color('white'), 0.8).string() : '#666'};
-  }
-`
-
-const DynamicInputValue = styled.div`
-  font-size: 40px;
-  font-weight: inherit;
-  line-height: 1;
-  opacity: 0;
-  transform: translateY(236px) scale(0);
-`
-
-const DynamicInputLabel = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 16px;
-  margin-bottom: 16px;
-  min-height: 32px;
-`
-
-const DynamicInputRoot = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-`
-
-const ColorBlockWrapper = styled.div`
-`
-
-const ColorBlockCode = styled.div`
-  position: absolute;
-  top: 100%;
-  padding-top: 8px;
-  padding-bottom: 16px;
-  transition: .2s;
-`
-
-const ColorBlockContainer = styled.div`
-  position: relative;
-  height: 72px;
-  max-width: ${props => props.wide ? 192 : 72}px;
-  ${props => props.wide && 'min-width: 192px'};
-  width: 100%;
-  ${props => !props.hasValidColor && 'box-shadow: inset 0 0 0 2px #ddd'};
-  flex-shrink: 1;
-  cursor: pointer;
-
-  &:not(:hover) .ColorBlockCode {
-    opacity: 0;
-    transition: .6s;
-  }
-
-  @media (max-width: 720px) {
-    ${props => props.wide && 'min-width: 144px'};
-  }
-`
-
-const copyAnimation = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  30% {
-    opacity: 0.5;
-  }
-  70% {
-    transform: translateY(0);
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0;
-  }
-`
-
-const CopiedText = styled.div`
-  animation: ${copyAnimation} 0.8s;
-  opacity: 0;
-`
-
-class ColorBlock extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      copied: false
-    }
-    this.handleCopied = this.handleCopied.bind(this)
-  }
-
-  handleCopied () {
-    this.setState({
-      copied: true
-    })
-    this.delayCopyFalseState()
-  }
-
-  delayCopyFalseState () {
-    setTimeout(() => {
-      this.setState({
-        copied: false
-      })
-    }, 800)
-  }
-
-  render () {
-    const { wide, hasValidColor, color, ...rest } = this.props
-
-    return (
-      <CopyToClipboard text={hasValidColor ? Color(color).hex() : null}>
-        <ColorBlockContainer wide={wide} hasValidColor={hasValidColor} {...rest} onClick={this.handleCopied}>
-          <ColorBlockWrapper {...rest} />
-
-          <ColorBlockCode className='ColorBlockCode'>
-            {hasValidColor ? Color(color).hex() : null}
-            {this.state.copied && (
-              <CopiedText copied={this.state.copied}>
-                {Color(color).hex()}
-              </CopiedText>
-            )}
-          </ColorBlockCode>
-        </ColorBlockContainer>
-      </CopyToClipboard>
-    )
-  }
-}
-
-const DynamicInput = ({ value, onChange, color, prefix, sufix, withSlider, withRgbSlider, label, min, max, ...rest }) => {
-  return (
-    <div>
-      <DynamicInputLabel>
-        {label}
-      </DynamicInputLabel>
-
-      <DynamicInputRoot>
-        <InputWrapper color={color}>
-          <DynamicInputField color={color} value={prefix} type='text' readOnly isDisabled tabIndex={-1} />
-          <DynamicInputValue>
-            {prefix}
-          </DynamicInputValue>
-        </InputWrapper>
-
-        <InputWrapper color={color}>
-          <DynamicInputField color={color} value={value} onChange={onChange} {...rest} min={min} max={max} />
-          <DynamicInputValue>
-            {value}
-          </DynamicInputValue>
-        </InputWrapper>
-
-        <InputWrapper color={color}>
-          <DynamicInputField color={color} value={sufix} type='text' readOnly isDisabled tabIndex={-1} />
-          <DynamicInputValue>
-            {sufix}
-          </DynamicInputValue>
-        </InputWrapper>
-      </DynamicInputRoot>
-
-      {withSlider && (
-        <Slider type='range' color={color} value={value} onChange={onChange} min={min} max={max}  />
-      )}
-    </div>
-  )
-}
 
 const initialColor = '1D9A6C'
 
 const defaultState = {
   darkColorsAmount: 4,
   lightColorsAmount: 6,
-  
+
   darkestAmount: 50,
   lightestAmount: 80,
-  
+
   darkColorsMixRotate: -51,
   lightColorsMixRotate: 67,
 
@@ -424,10 +142,10 @@ class App extends Component {
     this.handleRChange = this.handleRChange.bind(this)
     this.handleGChange = this.handleGChange.bind(this)
     this.handleBChange = this.handleBChange.bind(this)
-    
+
     this.handleLightSaturationChange = this.handleLightSaturationChange.bind(this)
     this.handleDarkSaturationChange = this.handleDarkSaturationChange.bind(this)
-    
+
     this.handleLightSaturationBlur = this.handleLightSaturationBlur.bind(this)
     this.handleDarkSaturationBlur = this.handleDarkSaturationBlur.bind(this)
   }
@@ -449,8 +167,7 @@ class App extends Component {
     const hash = decodeURI(window.location.hash)
 
     if (hash) {
-
-      const stateKeysArray =  Object.keys(defaultState)
+      const stateKeysArray = Object.keys(defaultState)
       const hashValuesArray = hash.substr(1, hash.length).split(['/'])
 
       const getHashObject = () => {
@@ -711,7 +428,7 @@ class App extends Component {
 
             <InputsRow>
               <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={() => this.clearStateOnBlur('darkColors')} label='Dark colors amount' />
               </InputsRowItem>
               <InputsRowItem>
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' min={0} max={99} onBlur={this.handleDarkestAmountBlur} withSlider label='Darkness' />
