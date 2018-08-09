@@ -442,7 +442,7 @@ class App extends Component {
   }
 
   updateHash () {
-    window.location.hash = encodeURI(Object.values(this.state).join('_'))
+    window.location.hash = encodeURI(Object.values(this.state).join('/'))
   }
 
   getHash () {
@@ -451,7 +451,7 @@ class App extends Component {
     if (hash) {
 
       const stateKeysArray =  Object.keys(defaultState)
-      const hashValuesArray = hash.substr(1, hash.length).split(['_'])
+      const hashValuesArray = hash.substr(1, hash.length).split(['/'])
 
       const getHashObject = () => {
         var hashObject = {}
@@ -725,7 +725,7 @@ class App extends Component {
 
               <InputsRowItemSeparataor
                 style={{
-                  background: isValidHex(numberToHex(this.state.mainColor)) ? Color(numberToHex(this.state.mainColor)).mix(Color('black'), 0.3).fade(0.7).string() : '#ddd'
+                  background: isValidHex(numberToHex(this.state.mainColor)) ? Color(numberToHex(this.state.mainColor)).mix(Color('black'), 0.3).fade(0.85).string() : '#ddd'
                 }}
               />
 
