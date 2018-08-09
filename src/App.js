@@ -126,7 +126,7 @@ class App extends Component {
     this.handleDarkColorsMixRotate = this.handleDarkColorsMixRotate.bind(this)
 
     this.handleMainColorChange = this.handleMainColorChange.bind(this)
-    this.handleMainColorBlur = this.handleMainColorBlurhandleMainColorBlur.bind(this)
+    this.handleMainColorBlur = this.handleMainColorBlur.bind(this)
 
     this.handleLightColorsAmountChange = this.handleLightColorsAmountChange.bind(this)
     this.handleLightestAmountChange = this.handleLightestAmountChange.bind(this)
@@ -204,7 +204,7 @@ class App extends Component {
     this.updateRgbWithMainColor(typedColorFiltered)
   }
 
-  handleMainColorBlurhandleMainColorBlur (e) {
+  handleMainColorBlur (e) {
     if (!e.target.value) {
       this.setState({
         mainColor: 666
@@ -386,7 +386,7 @@ class App extends Component {
           <ColorsSection>
             <InputsRow>
               <InputsRowItem wide>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlurhandleMainColorBlur} prefix='#' label='Color' />
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlur} prefix='#' label='Color' />
 
                 <SliderWrapper>
                   <SliderLabel>
@@ -428,7 +428,7 @@ class App extends Component {
 
             <InputsRow>
               <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={() => this.clearStateOnBlur('darkColors')} label='Dark colors amount' />
+                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
               </InputsRowItem>
               <InputsRowItem>
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' min={0} max={99} onBlur={this.handleDarkestAmountBlur} withSlider label='Darkness' />
