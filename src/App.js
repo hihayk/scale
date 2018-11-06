@@ -369,11 +369,16 @@ class App extends Component {
     let step
     for (step = 0; step < colorsAmount; step++) {
       if (isValidHex(numberToHex(this.state.mainColor))) {
+
         colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
       } else {
       colorsList.push(errorColor)
+
       }
+
+
 }
+
 //Check if Local Storage is available
 function storageAvailable(type) {
     try {
@@ -398,9 +403,17 @@ function storageAvailable(type) {
             storage.length !== 0;
     }
 }
+
 if (storageAvailable('localStorage')) {
 //Create a LS item to check for changes in the colorsList Arr
     localStorage.setItem('changeChecker', colorsList)
+    // Convert givenColor
+    let rOfMain = (Color(numberToHex(this.state.mainColor)).rgb().red())
+    let gOfMain = (Color(numberToHex(this.state.mainColor)).rgb().green())
+    let bOfMain = (Color(numberToHex(this.state.mainColor)).rgb().blue())
+    let mainToRGB = ("rgb(" + rOfMain + "," + gOfMain + "," + bOfMain + ")" + " ")
+// Create LS item for main colors
+  localStorage.setItem('mainColor', mainToRGB)
 //If LS is available, the colorsList arr has a length of four and the darkColors arr is empty store the Darkcolor bar values as a LS entry named darkColors in the LS
   if (colorsList.length === 4 && localStorage.getItem("darkColors") === null) {
   localStorage.setItem('darkColors', colorsList);
@@ -428,7 +441,7 @@ if(localStorage.getItem("lightColors") != localStorage.getItem('changeChecker') 
     };
     //Create a Listener for Download
     let downloadButton = document.getElementById('downloadButton'),
-    colorValuesCombined = "Colors Going Darkest to Lightest " + localStorage.getItem('darkColors') + localStorage.getItem('lightColors');
+    colorValuesCombined = "Dark Colors Lightest To Darkest: " + localStorage.getItem('darkColors') + " Main Color: " + localStorage.getItem('mainColor') + "Light Colors. Darkest to Lightest: " + localStorage.getItem('lightColors');
     downloadButton.addEventListener('click', function () {
       localStorage.clear();
       let link = document.getElementById('downloadlink');
