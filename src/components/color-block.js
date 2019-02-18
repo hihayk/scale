@@ -30,7 +30,7 @@ const ColorBlockContainer = styled.div`
   }
 
   @media (max-width: 720px) {
-    ${props => props.wide && 'min-width: 144px'};
+    ${props => props.wide && 'min-width: 96px'};
   }
 `
 
