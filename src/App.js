@@ -6,6 +6,8 @@ import DynamicInput from './components/dynamic-input.js'
 import Slider from './components/slider.js'
 import ColorBlock from './components/color-block.js'
 import { isValidHex } from './utils.js'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+
 
 const errorColor = 'transparent'
 
@@ -91,6 +93,22 @@ const InputsRowItemSeparataor = styled.div`
   flex-shrink: 0;
 `
 
+const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, colorsObject) => {
+  const colorsList = []
+  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
+
+  let step
+  for (step = 0; step < colorsAmount; step++) {
+    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor))) {
+      colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
+    } else {
+      colorsList.push(errorColor)
+    }
+  }
+
+  return colorsList
+}
+
 const numberToHex = (number) => '#' + number
 const hexToNumber = (number) => number.substr(1, number.length)
 
@@ -115,7 +133,7 @@ const defaultState = {
   b: Color(numberToHex(initialColor)).rgb().blue()
 }
 
-class App extends Component {
+class ScaleApp extends Component {
   constructor (props) {
     super(props)
 
@@ -464,10 +482,94 @@ class App extends Component {
 
         <FooterSection>
           <a href='/scale'><h1>Scale</h1></a>&nbsp; · &nbsp;made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>&nbsp; · &nbsp;<a href='https://github.com/hihayk/scale' target='_blank' rel='noopener noreferrer'>GitHub</a>
+          &nbsp; · &nbsp;<Link to="/gallery">Gallery</Link>
         </FooterSection>
       </MainWrapper>
     )
   }
 }
+
+const galleryData = [
+  {
+    scaleValue: '#4/6/50/80/-109/67/20/14/1D9A6C/29/154/108',
+    authorName: 'Brian',
+    authorLink: 'https://github.com/darren131',
+  },
+  {
+    scaleValue: '#4/6/50/80/-51/67/20/14/1D486C/29/72/108',
+    authorName: 'Brian',
+    authorLink: 'https://github.com/darren131',
+  },
+  {
+    scaleValue: '#0/6/65/87/-51/119/59/14/00508A/0/80/138',
+    authorName: 'Brian',
+    authorLink: 'https://github.com/darren131',
+  },
+  {
+    scaleValue: '#7/0/99/85/-51/67/20/14/D80051/216/0/81',
+    authorName: 'Brian',
+    authorLink: 'https://github.com/darren131',
+  },
+]
+
+const hashToObject = (hash) => {
+  if (hash) {
+    const stateKeysArray = Object.keys(defaultState)
+    const hashValuesArray = hash.substr(1, hash.length).split(['/'])
+
+    const getHashObject = () => {
+      var hashObject = {}
+      stateKeysArray.forEach((key, i) => hashObject[key] = hashValuesArray[i])
+
+      return hashObject
+    }
+
+    return getHashObject()
+  }
+
+  return null
+}
+
+const GalleryApp = () => (
+  <div>
+    {Object.entries(galleryData).map(([key, value]) => {
+      const getColorsObject = () => hashToObject(value.scaleValue)
+
+      return (
+        <div>
+          <ColorBlocksRow>
+            {getColorsList(getColorsObject().darkColorsAmount, getColorsObject().darkestAmount, 'black', getColorsObject().darkColorsMixRotate, getColorsObject().darkSaturation, value).reverse().map((color, index) => (
+              <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))} color={color} key={index} />
+            ))}
+
+            <ColorBlock
+              wide
+              style={{ background: isValidHex(numberToHex(getColorsObject().mainColor)) ? numberToHex(getColorsObject().mainColor) : errorColor }}
+              hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))}
+              color={numberToHex(getColorsObject().mainColor)}
+            />
+
+            {getColorsList(getColorsObject().lightColorsAmount, getColorsObject().lightestAmount, 'white', getColorsObject().lightColorsMixRotate, getColorsObject().lightSaturation, value).map((color, index) => (
+              <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))} color={color} key={index} />
+            ))}
+          </ColorBlocksRow>
+
+
+
+          {value.authorName}
+        </div>
+      )
+    })}
+  </div>
+)
+
+const App = () => (
+  <Router basename={process.env.PUBLIC_URL}>
+    <div>
+      <Route exact path="/" component={ScaleApp} />
+      <Route exact path="/gallery" component={GalleryApp} />
+    </div>
+  </Router>
+)
 
 export default App
