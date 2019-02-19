@@ -604,7 +604,7 @@ const GalleryApp = () => (
 
       return (
         <GalleryItem color={numberToHex(getColorsObject())}>
-          <a href={`/${value.scaleValue}`}>
+          <a href={`https://hihayk.github.io/scale/${value.scaleValue}`}>
             <ColorBlocksRow disabled>
               {getColorsList(getColorsObject().darkColorsAmount, getColorsObject().darkestAmount, 'black', getColorsObject().darkColorsMixRotate, getColorsObject().darkSaturation, value).reverse().map((color, index) => (
                 <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))} color={color} key={index} />
