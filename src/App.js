@@ -5,11 +5,10 @@ import styled from 'styled-components'
 import DynamicInput from './components/dynamic-input.js'
 import Slider from './components/slider.js'
 import ColorBlock from './components/color-block.js'
-import { isValidHex } from './utils.js'
+import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState } from './utils.js'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-
-
-const errorColor = 'transparent'
+import GalleryApp from './components/gallery-app'
+import ColorBlocksRow from './components/color-blocks-row'
 
 const MainWrapper = styled.div`
   color: ${props => {
@@ -64,12 +63,6 @@ const FooterSection = styled.div`
   }
 `
 
-const ColorBlocksRow = styled.div`
-  display: flex;
-  width: 100%;
-  ${props => props.disabled && `pointer-events: none`};
-`
-
 const InputsRow = styled.div`
   display: flex;
   width: 100%;
@@ -92,46 +85,6 @@ const InputsRowItemSeparataor = styled.div`
   width: 1px;
   flex-shrink: 0;
 `
-
-const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, colorsObject) => {
-  const colorsList = []
-  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
-
-  let step
-  for (step = 0; step < colorsAmount; step++) {
-    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor))) {
-      colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
-    } else {
-      colorsList.push(errorColor)
-    }
-  }
-
-  return colorsList
-}
-
-const numberToHex = (number) => '#' + number
-const hexToNumber = (number) => number.substr(1, number.length)
-
-const initialColor = '1D9A6C'
-
-const defaultState = {
-  darkColorsAmount: 4,
-  lightColorsAmount: 6,
-
-  darkestAmount: 50,
-  lightestAmount: 80,
-
-  darkColorsMixRotate: -51,
-  lightColorsMixRotate: 67,
-
-  lightSaturation: 20,
-  darkSaturation: 14,
-
-  mainColor: initialColor,
-  r: Color(numberToHex(initialColor)).rgb().red(),
-  g: Color(numberToHex(initialColor)).rgb().green(),
-  b: Color(numberToHex(initialColor)).rgb().blue()
-}
 
 class ScaleApp extends Component {
   constructor (props) {
@@ -488,221 +441,6 @@ class ScaleApp extends Component {
     )
   }
 }
-
-const galleryData = [
-  {
-    scaleValue: '#8/0/0/0/-53/-193/0/-100/0098FF/0/152/255',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-  {
-    scaleValue: '#4/6/62/91/0/17/-36/14/3E83FF/62/131/255',
-    authorName: 'StrowBeary',
-    authorLink: 'https://remicaillot.fr/',
-  },
-  {
-    scaleValue: '#4/6/10/87/-103/146/39/-100/FFB177/255/177/119',
-    authorName: 'Kyle Hall',
-    authorLink: 'https://github.com/kyle-hall',
-  },
-  {
-    scaleValue: '#4/4/70/89/0/0/0/4/0859fC/8/89/252',
-    authorName: 'LizS',
-  },
-  {
-    scaleValue: '#4/6/51/83/-8/-8/74/77/269AC9/38/154/201',
-    authorName: 'Hum',
-    authorLink: 'https://vk.com/hummanoid',
-  },
-  {
-    scaleValue: '#2/6/25/80/8/-33/-7/47/F16334/241/99/52',
-    authorName: 'David Kariuki',
-    authorLink: 'https://www.behance.net/davellykariuki',
-  },
-  {
-    scaleValue: '#4/6/65/80/82/11/41/-1/A39A6C/163/154/108',
-    authorName: 'TheXCodeSeeker',
-  },
-  {
-    scaleValue: '#4/6/50/80/-12/77/33/-10/23A9CF/35/169/207',
-    authorName: 'Don',
-    authorLink: 'http://thinkrepeat.com/',
-  },
-  {
-    scaleValue: '#3/0/50/80/-51/67/20/14/C0DE58/192/222/88',
-    authorName: 'Pinki',
-    authorLink: 'https://dribbble.com/Pinki',
-  },
-  {
-    scaleValue: '#2/2/50/25/-50/-150/25/-50/E05040/224/80/64',
-    authorName: 'Dan Pontes',
-    authorLink: 'https://danpontes.webflow.io',
-  },
-  {
-    scaleValue: '#4/6/80/97/-51/-3/0/14/7d61dc/125/97/220',
-    authorName: 'Accessible Visual',
-    authorLink: 'https://www.freshworks.com/agile-project-management-software/?source=fworks&medium=referral&campaign=fworks_product_nav',
-  },
-  {
-    scaleValue: '#5/5/62/40/118/-172/-46/14/FFE64A/255/230/74',
-    authorName: 'Crshlab',
-    authorLink: 'http://crashlab.be',
-  },
-  {		
-    scaleValue: '#6/8/32/80/-31/67/5/100/1D9AFF/29/154/255',
-    authorName: 'Michael Andreuzza ',
-    authorLink: 'https://dribbble.com/MichaelAndreuzza',
-  },
-  {		
-    scaleValue: '#4/6/50/61/-51/17/63/14/1DBDC3/29/189/195',
-    authorName: 'Ali Rahmani',
-    authorLink: 'https://www.instagram.com/rahmaniali.ir/',
-  },     
-  {		
-    scaleValue: '#2/4/50/80/-51/67/20/14/a5b0feff/165/176/254',
-    authorName: 'Siar',
-  },   
-  {
-    scaleValue: '#2/4/31/82/-8/-48/34/31/6a67b1/106/103/177',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-  {
-    scaleValue: '#0/9/0/95/0/0/0/0/444/68/68/68',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-  {
-    scaleValue: '#0/9/42/83/72/-55/60/50/9E3E3C/158/62/60',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-  {
-    scaleValue: '#3/6/42/83/72/-76/60/50/824479/130/68/121',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-  {
-    scaleValue: '#0/5/44/70/-51/116/100/14/45397F/69/57/127',
-    authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
-  },
-]
-
-const hashToObject = (hash) => {
-  if (hash) {
-    const stateKeysArray = Object.keys(defaultState)
-    const hashValuesArray = hash.substr(1, hash.length).split(['/'])
-
-    const getHashObject = () => {
-      var hashObject = {}
-      stateKeysArray.forEach((key, i) => hashObject[key] = hashValuesArray[i])
-
-      return hashObject
-    }
-
-    return getHashObject()
-  }
-
-  return null
-}
-
-const GalleryWrapper = styled.div`
-  padding: 80px;
-
-  @media (max-width: 720px) {
-    padding: 32px;
-  }
-`
-
-const GalleryItem = styled.div`
-  padding: 80px 0 40px 0;
-  border-bottom: 1px solid ${props => Color(props.color.mainColor).alpha(0.1).string()};
-`
-
-const ItemAuthor = styled.a`
-  margin-top: 24px;
-  color: ${props => props.color};
-  display: inline-block;
-  text-decoration: none;
-  font-size: 12px;
-  line-height: 16px;
-`
-
-const GalleryHeader = styled.header`
-  display: inline-block;
-  text-decoration: none;
-  font-size: 34px;
-  line-height: 34px;
-  border-bottom: 1px solid #ddd;
-  width: 100%;
-  padding: calc(50vh - 240px) 0 80px 0;
-  color: #222;
-  display: flex;
-
-  a {
-    color: #aaa;
-    text-decoration: none;
-  }
-
-  @media (max-width: 720px) {
-    font-size: 18px;
-    line-height: 28px;
-  }
-`
-
-const SubmitLink = styled.a`
-  margin-left: auto;
-`
-
-const GalleryApp = () => (
-  <GalleryWrapper>
-    <GalleryHeader>
-      <Link to="/">scale/</Link>gallery
-
-      <SubmitLink
-        href="https://hayk15.typeform.com/to/mVHrni"
-        data-mode="drawer_right"
-        data-hide-headers={true}
-        data-hide-footer={true}
-        data-submit-close-delay="5"
-        className="typeform-share"
-      >
-        +submit
-      </SubmitLink>
-    </GalleryHeader>
-    {Object.entries(galleryData).map(([key, value]) => {
-      const getColorsObject = () => hashToObject(value.scaleValue)
-
-      return (
-        <GalleryItem color={numberToHex(getColorsObject())}>
-          <a href={`https://hihayk.github.io/scale/${value.scaleValue}`}>
-            <ColorBlocksRow disabled>
-              {getColorsList(getColorsObject().darkColorsAmount, getColorsObject().darkestAmount, 'black', getColorsObject().darkColorsMixRotate, getColorsObject().darkSaturation, value).reverse().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))} color={color} key={index} />
-              ))}
-
-              <ColorBlock
-                wide
-                style={{ background: isValidHex(numberToHex(getColorsObject().mainColor)) ? numberToHex(getColorsObject().mainColor) : errorColor }}
-                hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))}
-                color={numberToHex(getColorsObject().mainColor)}
-              />
-
-              {getColorsList(getColorsObject().lightColorsAmount, getColorsObject().lightestAmount, 'white', getColorsObject().lightColorsMixRotate, getColorsObject().lightSaturation, value).map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(getColorsObject().mainColor))} color={color} key={index} />
-              ))}
-            </ColorBlocksRow>
-
-            <ItemAuthor href={value.authorLink} target='_blank' color={numberToHex(getColorsObject().mainColor)}>
-              by {value.authorName}
-            </ItemAuthor>
-          </a>
-        </GalleryItem>
-      )
-    })}
-  </GalleryWrapper>
-)
 
 const App = () => (
   <Router basename={process.env.PUBLIC_URL}>
