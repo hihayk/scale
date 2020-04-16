@@ -337,16 +337,89 @@ class ScaleApp extends Component {
   getColorsList (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation) {
     const colorsList = []
     const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
-
     let step
     for (step = 0; step < colorsAmount; step++) {
       if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
+       colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
       } else {
-        colorsList.push(errorColor)
+      colorsList.push(errorColor)
       }
-    }
+}
 
+//Check if Local Storage is available
+function storageAvailable(type) {
+    try {
+        var storage = window[type],
+            x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage.length !== 0;
+    }
+}
+
+if (storageAvailable('localStorage')) {
+//Create a LS item to check for changes in the colorsList Arr
+    localStorage.setItem('changeChecker', colorsList)
+    // Convert givenColor
+    let rOfMain = (Color(numberToHex(this.state.mainColor)).rgb().red())
+    let gOfMain = (Color(numberToHex(this.state.mainColor)).rgb().green())
+    let bOfMain = (Color(numberToHex(this.state.mainColor)).rgb().blue())
+    let mainToRGB = ("rgb(" + rOfMain + "," + gOfMain + "," + bOfMain + ")" + " ")
+// Create LS item for main colors
+  localStorage.setItem('mainColor', mainToRGB)
+//If LS is available, the colorsList arr has a length of four and the darkColors arr is empty store the Darkcolor bar values as a LS entry named darkColors in the LS
+  if (colorsList.length === 4 && localStorage.getItem("darkColors") === null) {
+  localStorage.setItem('darkColors', colorsList);
+  }
+  //If LS is available and the darkColors arr has been filled store the lightcolor bar values as a LS entry named darkColors in the LS
+  if(colorsList.length === 6){
+    localStorage.setItem('lightColors', colorsList);
+  }
+  //Use the LS item changeChecker to check for changes in the colorsList Arr and compare it to the lightcolors item. If they aren't equal and the darkColors Item is not null empty update the darkColors item
+if(localStorage.getItem("lightColors") != localStorage.getItem('changeChecker') && localStorage.getItem("darkColors") != null){
+  localStorage.setItem('darkColors', colorsList);
+}
+  //Create a new Blob for the values so they can be downloaded
+  (function () {
+  let textFile = null,
+    makeTextFile = function (text) {
+      let data = new Blob([text], {type: 'text/plain'});
+      // If we are replacing a previously generated file we need to
+      // manually revoke the object URL to avoid memory leaks.
+      if (textFile !== null) {
+        window.URL.revokeObjectURL(textFile);
+      }
+      textFile = window.URL.createObjectURL(data);
+      return textFile;
+    };
+    //Create a Listener for Download
+    let downloadButton = document.getElementById('downloadButton'),
+    colorValuesCombined = "Dark Colors Lightest To Darkest: " + localStorage.getItem('darkColors') + " Main Color: " + localStorage.getItem('mainColor') + "Light Colors. Darkest to Lightest: " + localStorage.getItem('lightColors');
+    downloadButton.addEventListener('click', function () {
+      localStorage.clear();
+      let link = document.getElementById('downloadlink');
+      link.href = makeTextFile(colorValuesCombined);
+      link.style.display = 'block';
+    }, false);
+  })();
+}
+else {
+alert("Local Storage is unavailable. You will be unable to save color values. ")
+}
     return colorsList
   }
 
@@ -396,7 +469,6 @@ class ScaleApp extends Component {
                 <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
               ))}
             </ColorBlocksRow>
-
             <InputsRow>
               <InputsRowItem>
                 <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
