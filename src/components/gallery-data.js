@@ -1,5 +1,10 @@
 export const galleryData = [
   {
+    scaleValue: '#4/4/54/86/103/30/-44/14/EEA96E/238/169/110',
+    authorName: 'Hayk',
+    authorLink: 'https://hihayk.com',
+  },
+  {
     scaleValue: '#8/0/0/0/-53/-193/0/-100/0098FF/0/152/255',
     authorName: 'Hayk',
     authorLink: 'https://hihayk.com',
