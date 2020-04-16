@@ -2,12 +2,12 @@ export const galleryData = [
   {
     scaleValue: '#4/4/54/86/103/30/-44/14/EEA96E/238/169/110',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#8/0/0/0/-53/-193/0/-100/0098FF/0/152/255',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#4/6/62/91/0/17/-36/14/3E83FF/62/131/255',
@@ -79,26 +79,26 @@ export const galleryData = [
   {
     scaleValue: '#2/4/31/82/-8/-48/34/31/6a67b1/106/103/177',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#0/9/0/95/0/0/0/0/444/68/68/68',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#0/9/42/83/72/-55/60/50/9E3E3C/158/62/60',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#3/6/42/83/72/-76/60/50/824479/130/68/121',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
   {
     scaleValue: '#0/5/44/70/-51/116/100/14/45397F/69/57/127',
     authorName: 'Hayk',
-    authorLink: 'https://hihayk.com',
+    authorLink: 'https://hayk.design',
   },
 ]
