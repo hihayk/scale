@@ -59,11 +59,11 @@ export const hashToObject = (hash) => {
 
 export const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, colorsObject) => {
   const colorsList = []
-  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue, defaultState).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
+  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
 
   let step
   for (step = 0; step < colorsAmount; step++) {
-    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue, defaultState).mainColor))) {
+    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor))) {
       colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
     } else {
       colorsList.push(errorColor)
