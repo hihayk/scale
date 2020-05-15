@@ -183,37 +183,74 @@ class ScaleApp extends Component {
     }
   }
 
-  handleDarkColorsAmountChange (e) {
+  
+  handleDarkColorsAmountChange(e) {
+    if (e.target.value && e.target.value.length > 3) {
+      e.target.value = 999;
+    }
+    if (e.target.value && e.target.value < 0) {
+      e.target.value = 0;
+    }
     this.setState({
       darkColorsAmount: e.target.value
     })
   }
 
-  handleDarkestAmountChange (e) {
+  handleDarkestAmountChange(e) {
+    if (e.target.value && e.target.value > 99) {
+      e.target.value = 99;
+    }
+    if (e.target.value && e.target.value < 0) {
+      e.target.value = 0;
+    }
     this.setState({
       darkestAmount: e.target.value
     })
   }
 
-  handleLightColorsAmountChange (e) {
+  handleLightColorsAmountChange(e) {
+    if (e.target.value && e.target.value.length > 3) {
+      e.target.value = 999;
+    }
+    if (e.target.value && e.target.value < 0) {
+      e.target.value = 0;
+    }
     this.setState({
       lightColorsAmount: e.target.value
     })
   }
 
-  handleLightestAmountChange (e) {
+  handleLightestAmountChange(e) {
+    if (e.target.value && e.target.value > 99) {
+      e.target.value = 99;
+    }
+    if (e.target.value && e.target.value < 0) {
+      e.target.value = 0;
+    }
     this.setState({
       lightestAmount: e.target.value
     })
   }
 
-  handleLightColorsMixRotate (e) {
+  handleLightColorsMixRotate(e) {
+    if (e.target.value && e.target.value > 360) {
+      e.target.value = 360;
+    }
+    if (e.target.value && e.target.value < -360) {
+      e.target.value = -360;
+    }
     this.setState({
       lightColorsMixRotate: e.target.value
     })
   }
 
-  handleDarkColorsMixRotate (e) {
+  handleDarkColorsMixRotate(e) {
+    if (e.target.value && e.target.value > 360) {
+      e.target.value = 360;
+    }
+    if (e.target.value && e.target.value < -360) {
+      e.target.value = -360;
+    }
     this.setState({
       darkColorsMixRotate: e.target.value
     })
@@ -323,12 +360,24 @@ class ScaleApp extends Component {
   }
 
   handleLightSaturationChange (e) {
+    if (e.target.value && e.target.value > 100) {
+      e.target.value = 100;
+    }
+    if (e.target.value && e.target.value < -100) {
+      e.target.value = -100;
+    }
     this.setState({
       lightSaturation: e.target.value
     })
   }
 
   handleDarkSaturationChange (e) {
+    if (e.target.value && e.target.value > 100) {
+      e.target.value = 100;
+    }
+    if (e.target.value && e.target.value < -100) {
+      e.target.value = -100;
+    }
     this.setState({
       darkSaturation: e.target.value
     })
