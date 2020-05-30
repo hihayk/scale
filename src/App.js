@@ -4,11 +4,12 @@ import Color from 'color'
 import styled from 'styled-components'
 import DynamicInput from './components/dynamic-input.js'
 import Slider from './components/slider.js'
-import ColorBlock from './components/color-block.js'
+import Footer from './components/footer.js'
 import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState } from './utils.js'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import GalleryApp from './components/gallery-app'
-import ColorBlocksRow from './components/color-blocks-row'
+import ColorsRow from './components/colors-row'
+import MainColorSelector from './components/main-color-selector'
 
 const MainWrapper = styled.div`
   color: ${props => {
@@ -26,20 +27,6 @@ const MainWrapper = styled.div`
   }
 `
 
-const SliderLabel = styled.div`
-  margin-right: 12px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 700;
-  position: relative;
-  top: 2px;
-`
-
-const SliderWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`
-
 const ColorsSection = styled.div`
   width: 100%;
 `
@@ -48,19 +35,6 @@ const TopSection = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-`
-
-const FooterSection = styled.div`
-  a {
-    color: inherit;
-  }
-
-  h1 {
-    font-size: inherit;
-    line-height: inherit;
-    font-weight: normal;
-    display: inline-block;
-  }
 `
 
 const InputsRow = styled.div`
@@ -334,68 +308,34 @@ class ScaleApp extends Component {
     })
   }
 
-  getColorsList (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation) {
-    const colorsList = []
-    const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
-
-    let step
-    for (step = 0; step < colorsAmount; step++) {
-      if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
-      } else {
-        colorsList.push(errorColor)
-      }
-    }
-
-    return colorsList
-  }
-
   render () {
     return (
       <MainWrapper color={numberToHex(this.state.mainColor)}>
         <TopSection>
           <ColorsSection>
-            <InputsRow>
-              <InputsRowItem wide>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlur} prefix='#' label='Color' />
+            <MainColorSelector
+              onInputChange={this.handleMainColorChange}
+              onInputBlur={this.handleMainColorBlur}
+              onRChange={this.handleRChange}
+              onGChange={this.handleGChange}
+              onBChange={this.handleBChange}
+              mainColor={this.state.mainColor}
+              r={this.state.r}
+              g={this.state.g}
+              b={this.state.b}
+            />
 
-                <SliderWrapper>
-                  <SliderLabel>
-                    R
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.r} onChange={this.handleRChange} />
-                </SliderWrapper>
-                <SliderWrapper>
-                  <SliderLabel>
-                    G
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.g} onChange={this.handleGChange} />
-                </SliderWrapper>
-                <SliderWrapper>
-                  <SliderLabel>
-                    B
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.b} onChange={this.handleBChange} />
-                </SliderWrapper>
-              </InputsRowItem>
-            </InputsRow>
-
-            <ColorBlocksRow style={{marginBottom: 88}}>
-              {this.getColorsList(this.state.darkColorsAmount, this.state.darkestAmount, 'black', this.state.darkColorsMixRotate, this.state.darkSaturation).reverse().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-
-              <ColorBlock
-                wide
-                style={{ background: isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor }}
-                hasValidColor={isValidHex(numberToHex(this.state.mainColor))}
-                color={numberToHex(this.state.mainColor)}
-              />
-
-              {this.getColorsList(this.state.lightColorsAmount, this.state.lightestAmount, 'white', this.state.lightColorsMixRotate, this.state.lightSaturation).map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-            </ColorBlocksRow>
+            <ColorsRow
+              darkColorsAmount={this.state.darkColorsAmount}
+              darkestAmount={this.state.darkestAmount}
+              darkColorsMixRotate={this.state.darkColorsMixRotate}
+              lightColorsAmount={this.state.lightColorsAmount}
+              lightestAmount={this.state.lightestAmount}
+              lightColorsMixRotate={this.state.lightColorsMixRotate}
+              mainColor={this.state.mainColor}
+              lightSaturation={this.state.lightSaturation}
+              darkSaturation={this.state.darkSaturation}
+            />
 
             <InputsRow>
               <InputsRowItem>
@@ -433,10 +373,7 @@ class ScaleApp extends Component {
           </ColorsSection>
         </TopSection>
 
-        <FooterSection>
-          <a href='https://hihayk.github.io/scale'><h1>Scale</h1></a>&nbsp; · &nbsp;made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>&nbsp; · &nbsp;<a href='https://github.com/hihayk/scale' target='_blank' rel='noopener noreferrer'>GitHub</a>
-          &nbsp; · &nbsp;<Link to="/gallery">Gallery</Link>
-        </FooterSection>
+        <Footer />
       </MainWrapper>
     )
   }
