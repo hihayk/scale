@@ -122,6 +122,7 @@ const ScaleApp = () => {
   useEffect(() => {
     updateHash()
     updateThemeColor()
+    rgbToMainColor()
   });
   
   const updateThemeColor = () => {
@@ -157,21 +158,6 @@ const ScaleApp = () => {
     }
   }
   
-  const handleRChange = (e) => {
-    setR(e.target.value)
-    rgbToMainColor()
-  }
-
-  const handleGChange = (e) => {
-    setG(e.target.value)
-    rgbToMainColor()
-  }
-
-  const handleBChange = (e) => {
-    setB(e.target.value)
-    rgbToMainColor()
-  }
-  
   return (
     <MainWrapper color={numberToHex(mainColor)}>
       <TopSection>
@@ -179,9 +165,9 @@ const ScaleApp = () => {
           <MainColorSelector
             onInputChange={handleMainColorChange}
             onInputBlur={(e) => !e.target.value && setMainColor(666)}
-            onRChange={handleRChange}
-            onGChange={handleGChange}
-            onBChange={handleBChange}
+            onRChange={(e) => setR(e.target.value)}
+            onGChange={(e) => setG(e.target.value)}
+            onBChange={(e) => setB(e.target.value)}
             mainColor={mainColor}
             r={r}
             g={g}
