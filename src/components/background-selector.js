@@ -2,12 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import Color from 'color'
 
-const Wrapper = styled.div`
-  border-left: 1px solid var(--border);
-  padding-left: 48px;
-  align-self: stretch;
-`
-
 const DotsWrapper = styled.div`
   height: 100%;
   display: flex;
@@ -52,7 +46,7 @@ const BackgroundSelector = ({
 }) => {
 
   return (
-    <Wrapper>
+    <React.Fragment>
       <Title>Background</Title>
       <DotsWrapper>
         <DotsColumn className="DotsColumn">
@@ -78,7 +72,7 @@ const BackgroundSelector = ({
           })}
         </DotsColumn>
       </DotsWrapper>
-    </Wrapper>
+    </React.Fragment>
   )
 }
 

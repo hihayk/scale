@@ -10,6 +10,7 @@ import GalleryApp from './components/gallery-app'
 import ColorsRow from './components/colors-row'
 import MainColorSelector from './components/main-color-selector'
 import BackgroundSelector from './components/background-selector'
+import Triggers from './components/triggers'
 
 const MainWrapper = styled.div`
   padding: 40px 80px;
@@ -60,6 +61,12 @@ const InputsRowItemSeparataor = styled.div`
   width: 1px;
   flex-shrink: 0;
   background-color: var(--border);
+`
+
+const BackgroundSelectorSection = styled.div`
+  border-left: 1px solid var(--border);
+  padding: 0 48px;
+  align-self: stretch;
 `
 
 const ScaleApp = () => {  
@@ -205,9 +212,11 @@ const ScaleApp = () => {
     const mixColor = bgColor.includes('l-') || bgColor.includes('white') ? 'black' : 'white'
     const bodyColor = Color(givenColor).mix(Color(mixColor), 0.5).string()
     const bodyDimmed = Color(givenColor).mix(Color(mixColor), 0.5).fade(0.7).string()
+    const bodyXDimmed = Color(givenColor).mix(Color(mixColor), 0.5).fade(0.9).string()
 
     document.documentElement.style.setProperty('--bodyColor', bodyColor)
     document.documentElement.style.setProperty('--bodyDimmed', bodyDimmed)
+    document.documentElement.style.setProperty('--bodyXDimmed', bodyXDimmed)
     document.documentElement.style.setProperty(
       '--border',
       isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color(mixColor), 0.3).fade(0.85).string() : '#ddd'
@@ -232,12 +241,32 @@ const ScaleApp = () => {
               g={g}
               b={b}
             />
-            <BackgroundSelector
-              setBgColor={setBgColor}
-              darkColors={darkColors}
-              lightColors={lightColors}
-              lightColorsAmount={lightColorsAmount}
-            />
+            <BackgroundSelectorSection>
+              <BackgroundSelector
+                setBgColor={setBgColor}
+                darkColors={darkColors}
+                lightColors={lightColors}
+                lightColorsAmount={lightColorsAmount}
+              />
+            </BackgroundSelectorSection>
+            <BackgroundSelectorSection>
+              <Triggers
+                mainColor={mainColor}
+                darkColors={darkColors}
+                lightColors={lightColors}
+                setR={setR}
+                setG={setG}
+                setB={setB}
+                setDarkColorsAmount={setDarkColorsAmount}
+                setDarkestAmount={setDarkestAmount}
+                setDarkColorsMixRotate={setDarkColorsMixRotate}
+                setLightColorsAmount={setLightColorsAmount}
+                setLightestAmount={setLightestAmount}
+                setLightColorsMixRotate={setLightColorsMixRotate}
+                setLightSaturation={setLightSaturation}
+                setDarkSaturation={setDarkSaturation}
+              />
+            </BackgroundSelectorSection>
           </GlobalConfigSection>
 
           <ColorsRow
