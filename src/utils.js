@@ -21,7 +21,9 @@ export const defaultState = {
   mainColor: initialColor,
   r: Color(numberToHex(initialColor)).rgb().red(),
   g: Color(numberToHex(initialColor)).rgb().green(),
-  b: Color(numberToHex(initialColor)).rgb().blue()
+  b: Color(numberToHex(initialColor)).rgb().blue(),
+
+  bgColor: 'white',
 }
 
 export const errorColor = 'transparent'
@@ -57,13 +59,13 @@ export const hashToObject = (hash) => {
   return null
 }
 
-export const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, colorsObject) => {
+export const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, mainColor) => {
   const colorsList = []
-  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
+  const givenColor = isValidHex(numberToHex(mainColor)) ? numberToHex(mainColor) : errorColor
 
   let step
   for (step = 0; step < colorsAmount; step++) {
-    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor))) {
+    if (isValidHex(numberToHex(mainColor))) {
       colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
     } else {
       colorsList.push(errorColor)

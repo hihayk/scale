@@ -14,7 +14,6 @@ const sliderTrackStyles = css`
   width: 100%;
   height: 2px;
   cursor: pointer;
-  animate: 0.2s;
   background: #D8D8D8;
   border-radius: 2px;
 `
@@ -28,6 +27,7 @@ const Slider = styled.input`
   cursor: pointer;
   margin-top: 8px;
   margin-bottom: 8px;
+  background-color: transparent;
 
   &:focus {
     outline: none;

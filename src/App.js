@@ -4,11 +4,12 @@ import Color from 'color'
 import styled from 'styled-components'
 import DynamicInput from './components/dynamic-input.js'
 import Footer from './components/footer.js'
-import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState } from './utils.js'
+import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState, getColorsList } from './utils.js'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import GalleryApp from './components/gallery-app'
 import ColorsRow from './components/colors-row'
 import MainColorSelector from './components/main-color-selector'
+import BackgroundSelector from './components/background-selector'
 
 const MainWrapper = styled.div`
   color: ${props => {
@@ -36,6 +37,10 @@ const TopSection = styled.div`
   align-items: center;
 `
 
+const GlobalConfigSection = styled.div`
+  display: flex;
+`
+
 const InputsRow = styled.div`
   display: flex;
   width: 100%;
@@ -57,6 +62,28 @@ const InputsRowItemSeparataor = styled.div`
   display: block;
   width: 1px;
   flex-shrink: 0;
+`
+
+const DotsWrapper = styled.div`
+  display: flex;
+`
+
+const DotsColumn = styled.div`
+  & + .DotsColumn {
+    margin-left: 4px;
+  }
+  
+  .Dot + .Dot {
+    margin-top: 4px;
+  }
+`
+
+const Dot = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  background-color: ${props => props.color};
+  cursor: pointer;
 `
 
 const ScaleApp = () => {  
@@ -95,6 +122,8 @@ const ScaleApp = () => {
   const [lightSaturation, setLightSaturation] = useState(initialState.lightSaturation)
   const [darkSaturation, setDarkSaturation] = useState(initialState.darkSaturation)
 
+  const [bgColor, setBgColor] = useState(initialState.bgColor)
+
   const currentState = {
     darkColorsAmount,
     lightColorsAmount,
@@ -107,7 +136,8 @@ const ScaleApp = () => {
     mainColor,
     r,
     g,
-    b
+    b,
+    bgColor,
   }
 
   if(getHash()) {
@@ -115,15 +145,8 @@ const ScaleApp = () => {
   }
 
   const updateHash = () => {
-    console.log('updating')
     window.location.hash = encodeURI(Object.values(currentState).join('/'))
   }
-
-  useEffect(() => {
-    updateHash()
-    updateThemeColor()
-    rgbToMainColor()
-  });
   
   const updateThemeColor = () => {
     document.getElementById('themeMetaTag').setAttribute('content', numberToHex(mainColor))
@@ -158,32 +181,97 @@ const ScaleApp = () => {
     }
   }
   
+  const bgRefToNumber = (ref) => {
+    if(ref.includes('l-')) {
+      return ref.substring(2, ref.length)
+    }
+    if(ref.includes('d-')) {
+      return ref.substring(2, ref.length)
+    }
+  }
+
+  const darkColors = getColorsList(darkColorsAmount, darkestAmount, 'black', darkColorsMixRotate, darkSaturation, mainColor).reverse().map((color) => (color))
+  const lightColors = getColorsList(lightColorsAmount, lightestAmount, 'white', lightColorsMixRotate, lightSaturation, mainColor).map((color) => (color))
+  
+  const setBgColorVar = () => {
+    let color = ''
+
+    if(bgColor === undefined) {
+      color = defaultState.bgColor
+      setBgColor(defaultState.bgColor)
+    } else {
+      if(bgColor === 'white' || bgColor === 'black') {
+        color = bgColor
+      }
+      
+      if(bgColor.includes('l-')) {
+        color = lightColors[lightColorsAmount - bgRefToNumber(bgColor)]
+      }
+      
+      if(bgColor.includes('d-')) {
+        color = darkColors[bgRefToNumber(bgColor)]
+      }
+    }
+
+    document.documentElement.style.setProperty('--bodyBg', color)
+  }
+  setBgColorVar()
+
+  useEffect(() => {
+    updateHash()
+    updateThemeColor()
+    rgbToMainColor()
+  });
+
+  
   return (
     <MainWrapper color={numberToHex(mainColor)}>
       <TopSection>
         <ColorsSection>
-          <MainColorSelector
-            onInputChange={handleMainColorChange}
-            onInputBlur={(e) => !e.target.value && setMainColor(666)}
-            onRChange={(e) => setR(e.target.value)}
-            onGChange={(e) => setG(e.target.value)}
-            onBChange={(e) => setB(e.target.value)}
-            mainColor={mainColor}
-            r={r}
-            g={g}
-            b={b}
-          />
+          <GlobalConfigSection>
+            <MainColorSelector
+              onInputChange={handleMainColorChange}
+              onInputBlur={(e) => !e.target.value && setMainColor(666)}
+              onRChange={(e) => setR(e.target.value)}
+              onGChange={(e) => setG(e.target.value)}
+              onBChange={(e) => setB(e.target.value)}
+              mainColor={mainColor}
+              r={r}
+              g={g}
+              b={b}
+            />
+            <div>
+              <DotsWrapper>
+                <DotsColumn className="DotsColumn">
+                  <Dot className="Dot" color='white' onClick={() => setBgColor('white')} />
+                  <Dot className="Dot" color='black' onClick={() => setBgColor('black')} />
+                </DotsColumn>
+                <DotsColumn className="DotsColumn">
+                  {darkColors.map((color, index) => {
+                    if(index < 2) {
+                      return(
+                        <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`d-${index}`)} />
+                      )
+                    }
+                  })}
+                </DotsColumn>
+                <DotsColumn className="DotsColumn">
+                  {lightColors.map((color, index) => {
+                    if(index > lightColorsAmount - 3) {
+                      return(
+                        <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`l-${lightColorsAmount - index}`)} />
+                      )
+                    }
+                  })}
+                </DotsColumn>
+              </DotsWrapper>
+            </div>
+          </GlobalConfigSection>
 
           <ColorsRow
-            darkColorsAmount={darkColorsAmount}
-            darkestAmount={darkestAmount}
-            darkColorsMixRotate={darkColorsMixRotate}
-            lightColorsAmount={lightColorsAmount}
-            lightestAmount={lightestAmount}
-            lightColorsMixRotate={lightColorsMixRotate}
-            lightSaturation={lightSaturation}
-            darkSaturation={darkSaturation}
             mainColor={mainColor}
+            darkColors={darkColors}
+            lightColors={lightColors}
           />
 
           <InputsRow>
