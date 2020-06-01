@@ -1,3 +1,19 @@
+:root {
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 32px;
+  --space-xl: 48px;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --space-s: 4px;
+    --space-m: 8px;
+    --space-l: 16px;
+    --space-xl: 32px;
+  }
+}
+
 html {
   height: 100%;
 }

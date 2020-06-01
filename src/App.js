@@ -37,12 +37,16 @@ const TopSection = styled.div`
 const GlobalConfigSection = styled.div`
   display: flex;
   margin-bottom: 64px;
+
+  flex-wrap: wrap;
+    @media (max-width: 1100px) {
+  }
 `
 
 const InputsRow = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: 64px;
+  margin-bottom: var(--space-xl);
 
   @media (max-width: 720px) {
     flex-direction: column;
@@ -67,6 +71,13 @@ const BackgroundSelectorSection = styled.div`
   border-left: 1px solid var(--border);
   padding: 0 48px;
   align-self: stretch;
+  
+  @media (max-width: 720px) {
+    padding: 16px 0;
+    margin-top: 16px;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
 `
 
 const ScaleApp = () => {  
@@ -209,17 +220,27 @@ const ScaleApp = () => {
   const setBodyColorVar = () => {
     const givenColor = isValidHex(numberToHex(mainColor)) ? numberToHex(mainColor) : errorColor
     
-    const mixColor = bgColor.includes('l-') || bgColor.includes('white') ? 'black' : 'white'
-    const bodyColor = Color(givenColor).mix(Color(mixColor), 0.5).string()
-    const bodyDimmed = Color(givenColor).mix(Color(mixColor), 0.5).fade(0.7).string()
-    const bodyXDimmed = Color(givenColor).mix(Color(mixColor), 0.5).fade(0.9).string()
+    const getMixColor = () => {
+      if(bgColor) {
+        if(bgColor.includes('l-') || bgColor.includes('white')) {
+          return 'black'
+        } else {
+          return 'white'
+        }
+      } else {
+        return 'white'
+      }
+    }
+    const bodyColor = Color(givenColor).mix(Color(getMixColor()), 0.5).string()
+    const bodyDimmed = Color(givenColor).mix(Color(getMixColor()), 0.5).fade(0.7).string()
+    const bodyXDimmed = Color(givenColor).mix(Color(getMixColor()), 0.5).fade(0.9).string()
 
     document.documentElement.style.setProperty('--bodyColor', bodyColor)
     document.documentElement.style.setProperty('--bodyDimmed', bodyDimmed)
     document.documentElement.style.setProperty('--bodyXDimmed', bodyXDimmed)
     document.documentElement.style.setProperty(
       '--border',
-      isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color(mixColor), 0.3).fade(0.85).string() : '#ddd'
+      isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color(getMixColor()), 0.3).fade(0.85).string() : '#ddd'
     )
   }
 

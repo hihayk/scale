@@ -15,8 +15,14 @@ const Title = styled.div`
 
 const ButtonsRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  
   & > * {
     margin-right: 4px;
+    
+    @media (max-width: 720px) {
+      margin-top: 4px;
+    }
   }
 `
 
