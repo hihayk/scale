@@ -118,8 +118,8 @@ const Triggers = ({
           <Button>Copy colors</Button>
         </CopyToClipboard>
 
-        <Button onClick={() => randomState()}>Randomise all</Button>
-        <Button onClick={() => randomColor()}>Randomise color</Button>
+        <Button onClick={() => randomState()}>Randomize all</Button>
+        <Button onClick={() => randomColor()}>Randomize color</Button>
       </ButtonsRow>
     </React.Fragment>
   )
