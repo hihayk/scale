@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import Color from 'color'
 import { galleryData } from './gallery-data'
-import { hashToObject, numberToHex, getColorsList, errorColor, isValidHex } from '../utils'
+import { hashToObject, numberToHex, errorColor, isValidHex } from '../utils'
 import ColorBlocksRow from './color-blocks-row'
 import ColorBlock from './color-block'
 
@@ -55,6 +55,22 @@ const SubmitLink = styled.a`
   margin-left: auto;
 `
 
+const getColorsList = (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation, colorsObject) => {
+  const colorsList = []
+  const givenColor = isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor)) ? numberToHex(hashToObject(colorsObject.scaleValue).mainColor) : errorColor
+
+  let step
+  for (step = 0; step < colorsAmount; step++) {
+    if (isValidHex(numberToHex(hashToObject(colorsObject.scaleValue).mainColor))) {
+      colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
+    } else {
+      colorsList.push(errorColor)
+    }
+  }
+
+  return colorsList
+}
+
 const GalleryApp = () => (
   <GalleryWrapper>
     <GalleryHeader>
@@ -73,8 +89,6 @@ const GalleryApp = () => (
     </GalleryHeader>
     {Object.entries(galleryData).map(([key, value]) => {
       const getColorsObject = () => hashToObject(value.scaleValue)
-
-      console.log(value.scaleValue)
 
       return (
         <GalleryItem color={numberToHex(getColorsObject())}>

@@ -1,20 +1,18 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import Color from 'color'
 import styled from 'styled-components'
 import DynamicInput from './components/dynamic-input.js'
-import Slider from './components/slider.js'
-import ColorBlock from './components/color-block.js'
-import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState } from './utils.js'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import Footer from './components/footer.js'
+import { isValidHex, numberToHex, hexToNumber, errorColor, defaultState, getColorsList } from './utils.js'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import GalleryApp from './components/gallery-app'
-import ColorBlocksRow from './components/color-blocks-row'
+import ColorsRow from './components/colors-row'
+import MainColorSelector from './components/main-color-selector'
+import BackgroundSelector from './components/background-selector'
+import Triggers from './components/triggers'
 
 const MainWrapper = styled.div`
-  color: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
-    return Color(givenColor).mix(Color('black'), 0.3).string()
-  }};
   padding: 40px 80px;
   min-height: 100vh;
   display: flex;
@@ -24,20 +22,6 @@ const MainWrapper = styled.div`
     padding: 32px;
     min-height: calc(100vh - 40px);
   }
-`
-
-const SliderLabel = styled.div`
-  margin-right: 12px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 700;
-  position: relative;
-  top: 2px;
-`
-
-const SliderWrapper = styled.div`
-  display: flex;
-  align-items: center;
 `
 
 const ColorsSection = styled.div`
@@ -50,23 +34,19 @@ const TopSection = styled.div`
   align-items: center;
 `
 
-const FooterSection = styled.div`
-  a {
-    color: inherit;
-  }
+const GlobalConfigSection = styled.div`
+  display: flex;
+  margin-bottom: 64px;
 
-  h1 {
-    font-size: inherit;
-    line-height: inherit;
-    font-weight: normal;
-    display: inline-block;
+  flex-wrap: wrap;
+    @media (max-width: 1100px) {
   }
 `
 
 const InputsRow = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: 64px;
+  margin-bottom: var(--space-xl);
 
   @media (max-width: 720px) {
     flex-direction: column;
@@ -84,57 +64,24 @@ const InputsRowItemSeparataor = styled.div`
   display: block;
   width: 1px;
   flex-shrink: 0;
+  background-color: var(--border);
 `
 
-class ScaleApp extends Component {
-  constructor (props) {
-    super(props)
-
-    this.state = this.getHash() || defaultState
-
-    this.handleDarkColorsAmountChange = this.handleDarkColorsAmountChange.bind(this)
-    this.handleDarkestAmountChange = this.handleDarkestAmountChange.bind(this)
-    this.handleDarkColorsMixRotate = this.handleDarkColorsMixRotate.bind(this)
-
-    this.handleMainColorChange = this.handleMainColorChange.bind(this)
-    this.handleMainColorBlur = this.handleMainColorBlur.bind(this)
-
-    this.handleLightColorsAmountChange = this.handleLightColorsAmountChange.bind(this)
-    this.handleLightestAmountChange = this.handleLightestAmountChange.bind(this)
-    this.handleLightColorsMixRotate = this.handleLightColorsMixRotate.bind(this)
-
-    this.handleDarkColorsAmountBlur = this.handleDarkColorsAmountBlur.bind(this)
-    this.handleDarkestAmountBlur = this.handleDarkestAmountBlur.bind(this)
-    this.handleLightColorsAmountBlur = this.handleLightColorsAmountBlur.bind(this)
-    this.handleLightestAmountBlur = this.handleLightestAmountBlur.bind(this)
-    this.handleLightColorsMixRotateBlur = this.handleLightColorsMixRotateBlur.bind(this)
-    this.handleDarkColorsMixRotateBlur = this.handleDarkColorsMixRotateBlur.bind(this)
-
-    this.handleRChange = this.handleRChange.bind(this)
-    this.handleGChange = this.handleGChange.bind(this)
-    this.handleBChange = this.handleBChange.bind(this)
-
-    this.handleLightSaturationChange = this.handleLightSaturationChange.bind(this)
-    this.handleDarkSaturationChange = this.handleDarkSaturationChange.bind(this)
-
-    this.handleLightSaturationBlur = this.handleLightSaturationBlur.bind(this)
-    this.handleDarkSaturationBlur = this.handleDarkSaturationBlur.bind(this)
+const BackgroundSelectorSection = styled.div`
+  border-left: 1px solid var(--border);
+  padding: 0 48px;
+  align-self: stretch;
+  
+  @media (max-width: 720px) {
+    padding: 16px 0;
+    margin-top: 16px;
+    border-left: 0;
+    border-top: 1px solid var(--border);
   }
+`
 
-  componentDidUpdate () {
-    this.updateHash()
-    this.updateThemeColor()
-  }
-
-  componentDidMount () {
-    this.updateThemeColor()
-  }
-
-  updateHash () {
-    window.location.hash = encodeURI(Object.values(this.state).join('/'))
-  }
-
-  getHash () {
+const ScaleApp = () => {  
+  const getHash = () => {
     const hash = decodeURI(window.location.hash)
 
     if (hash) {
@@ -154,11 +101,60 @@ class ScaleApp extends Component {
     return null
   }
 
-  updateThemeColor () {
-    document.getElementById('themeMetaTag').setAttribute('content', numberToHex(this.state.mainColor))
+  const initialState = getHash() || defaultState
+  const [mainColor, setMainColor] = useState(initialState.mainColor)
+  const [r, setR] = useState(initialState.r)
+  const [g, setG] = useState(initialState.g)
+  const [b, setB] = useState(initialState.b)
+
+  const [darkColorsAmount, setDarkColorsAmount] = useState(initialState.darkColorsAmount)
+  const [darkestAmount, setDarkestAmount] = useState(initialState.darkestAmount)
+  const [darkColorsMixRotate, setDarkColorsMixRotate] = useState(initialState.darkColorsMixRotate)
+  const [lightColorsAmount, setLightColorsAmount] = useState(initialState.lightColorsAmount)
+  const [lightestAmount, setLightestAmount] = useState(initialState.lightestAmount)
+  const [lightColorsMixRotate, setLightColorsMixRotate] = useState(initialState.lightColorsMixRotate)
+  const [lightSaturation, setLightSaturation] = useState(initialState.lightSaturation)
+  const [darkSaturation, setDarkSaturation] = useState(initialState.darkSaturation)
+
+  const [bgColor, setBgColor] = useState(initialState.bgColor)
+
+  const currentState = {
+    darkColorsAmount,
+    lightColorsAmount,
+    darkestAmount,
+    lightestAmount,
+    darkColorsMixRotate,
+    lightColorsMixRotate,
+    lightSaturation,
+    darkSaturation,
+    mainColor,
+    r,
+    g,
+    b,
+    bgColor,
   }
 
-  handleMainColorChange (e) {
+  if(getHash()) {
+    window.location.hash = encodeURI(Object.values(getHash()).join('/'))
+  }
+
+  const updateHash = () => {
+    window.location.hash = encodeURI(Object.values(currentState).join('/'))
+  }
+  
+  const updateThemeColor = () => {
+    document.getElementById('themeMetaTag').setAttribute('content', numberToHex(mainColor))
+  }
+
+  const updateRgbWithMainColor = (color) => {
+    if (isValidHex(numberToHex(color))) {
+      setR(Color(numberToHex(color)).rgb().red())
+      setG(Color(numberToHex(color)).rgb().green())
+      setB(Color(numberToHex(color)).rgb().blue())
+    }
+  }
+
+  const handleMainColorChange = (e) => {
     let typedColorFiltered
     const typedColor = e.target.value
 
@@ -168,278 +164,269 @@ class ScaleApp extends Component {
       typedColorFiltered = typedColor
     }
 
-    this.setState({
-      mainColor: typedColorFiltered
-    })
+    setMainColor(typedColorFiltered)
 
-    this.updateRgbWithMainColor(typedColorFiltered)
+    updateRgbWithMainColor(typedColorFiltered)
   }
 
-  handleMainColorBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        mainColor: 666
-      })
-    }
-  }
-
-  handleDarkColorsAmountChange (e) {
-    this.setState({
-      darkColorsAmount: e.target.value
-    })
-  }
-
-  handleDarkestAmountChange (e) {
-    this.setState({
-      darkestAmount: e.target.value
-    })
-  }
-
-  handleLightColorsAmountChange (e) {
-    this.setState({
-      lightColorsAmount: e.target.value
-    })
-  }
-
-  handleLightestAmountChange (e) {
-    this.setState({
-      lightestAmount: e.target.value
-    })
-  }
-
-  handleLightColorsMixRotate (e) {
-    this.setState({
-      lightColorsMixRotate: e.target.value
-    })
-  }
-
-  handleDarkColorsMixRotate (e) {
-    this.setState({
-      darkColorsMixRotate: e.target.value
-    })
-  }
-
-  handleDarkColorsAmountBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        darkColorsAmount: 0
-      })
-    }
-  }
-
-  handleDarkestAmountBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        darkestAmount: 0
-      })
-    }
-  }
-
-  handleLightColorsAmountBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        lightColorsAmount: 0
-      })
-    }
-  }
-
-  handleLightestAmountBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        lightestAmount: 0
-      })
-    }
-  }
-
-  handleLightColorsMixRotateBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        lightColorsMixRotate: 0
-      })
-    }
-  }
-
-  handleDarkColorsMixRotateBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        darkColorsMixRotate: 0
-      })
-    }
-  }
-
-  handleLightSaturationBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        lightSaturation: 0
-      })
-    }
-  }
-
-  handleDarkSaturationBlur (e) {
-    if (!e.target.value) {
-      this.setState({
-        darkSaturation: 0
-      })
-    }
-  }
-
-  rgbToMainColor () {
+  const rgbToMainColor = () => {
     setTimeout(() => {
-      this.setState({
-        mainColor: hexToNumber(Color(`rgb(${this.state.r}, ${this.state.g}, ${this.state.b})`).hex())
-      })
+      setMainColor(hexToNumber(Color(`rgb(${r}, ${g}, ${b})`).hex()))
     }, 0)
   }
 
-  updateRgbWithMainColor (color) {
-    if (isValidHex(numberToHex(color))) {
-      this.setState({
-        r: Color(numberToHex(color)).rgb().red(),
-        g: Color(numberToHex(color)).rgb().green(),
-        b: Color(numberToHex(color)).rgb().blue()
-      })
+  const handleRChange = (value) => {
+    setR(value)
+    rgbToMainColor()
+  }
+  const handleGChange = (value) => {
+    setG(value)
+    rgbToMainColor()
+  }
+  const handleBChange = (value) => {
+    setB(value)
+    rgbToMainColor()
+  }
+  
+  const bgRefToNumber = (ref) => {
+    if(ref.includes('l-')) {
+      return ref.substring(2, ref.length)
+    }
+    if(ref.includes('d-')) {
+      return ref.substring(2, ref.length)
     }
   }
 
-  handleRChange (e) {
-    this.setState({
-      r: e.target.value
-    })
-    this.rgbToMainColor()
-  }
+  const darkColors = getColorsList(darkColorsAmount, darkestAmount, 'black', darkColorsMixRotate, darkSaturation, mainColor).reverse().map((color) => (color))
+  const lightColors = getColorsList(lightColorsAmount, lightestAmount, 'white', lightColorsMixRotate, lightSaturation, mainColor).map((color) => (color))
+  
+  const setBgColorVar = () => {
+    let color = ''
 
-  handleGChange (e) {
-    this.setState({
-      g: e.target.value
-    })
-    this.rgbToMainColor()
-  }
-
-  handleBChange (e) {
-    this.setState({
-      b: e.target.value
-    })
-    this.rgbToMainColor()
-  }
-
-  handleLightSaturationChange (e) {
-    this.setState({
-      lightSaturation: e.target.value
-    })
-  }
-
-  handleDarkSaturationChange (e) {
-    this.setState({
-      darkSaturation: e.target.value
-    })
-  }
-
-  getColorsList (colorsAmount, colorsShiftAmount, mixColor, rotate, saturation) {
-    const colorsList = []
-    const givenColor = isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor
-
-    let step
-    for (step = 0; step < colorsAmount; step++) {
-      if (isValidHex(numberToHex(this.state.mainColor))) {
-        colorsList.push(Color(givenColor).rotate((step + 1) / colorsAmount * -rotate).saturate((step + 1) / colorsAmount * (saturation / 100)).mix(Color(mixColor), (colorsShiftAmount / 100) * (step + 1) / colorsAmount).string())
-      } else {
-        colorsList.push(errorColor)
+    if(bgColor === undefined) {
+      color = defaultState.bgColor
+      setBgColor(defaultState.bgColor)
+    } else {
+      if(bgColor === 'white' || bgColor === 'black') {
+        color = bgColor
+      }
+      
+      if(bgColor.includes('l-')) {
+        color = lightColors[lightColorsAmount - bgRefToNumber(bgColor)]
+      }
+      
+      if(bgColor.includes('d-')) {
+        color = darkColors[bgRefToNumber(bgColor)]
       }
     }
 
-    return colorsList
+    document.documentElement.style.setProperty('--bodyBg', color)
   }
+  setBgColorVar()
 
-  render () {
-    return (
-      <MainWrapper color={numberToHex(this.state.mainColor)}>
-        <TopSection>
-          <ColorsSection>
-            <InputsRow>
-              <InputsRowItem wide>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.mainColor} onChange={this.handleMainColorChange} onBlur={this.handleMainColorBlur} prefix='#' label='Color' />
+  useEffect(() => {
+    updateHash()
+    updateThemeColor()
+  });
 
-                <SliderWrapper>
-                  <SliderLabel>
-                    R
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.r} onChange={this.handleRChange} />
-                </SliderWrapper>
-                <SliderWrapper>
-                  <SliderLabel>
-                    G
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.g} onChange={this.handleGChange} />
-                </SliderWrapper>
-                <SliderWrapper>
-                  <SliderLabel>
-                    B
-                  </SliderLabel>
-                  <Slider type='range' min={0} max={255} color={numberToHex(this.state.mainColor)} value={this.state.b} onChange={this.handleBChange} />
-                </SliderWrapper>
-              </InputsRowItem>
-            </InputsRow>
+  const setBodyColorVar = () => {
+    const givenColor = isValidHex(numberToHex(mainColor)) ? numberToHex(mainColor) : errorColor
+    
+    const getMixColor = () => {
+      if(bgColor) {
+        if(bgColor.includes('l-') || bgColor.includes('white')) {
+          return 'black'
+        } else {
+          return 'white'
+        }
+      } else {
+        return 'white'
+      }
+    }
+    const bodyColor = Color(givenColor).mix(Color(getMixColor()), 0.5).string()
+    const bodyDimmed = Color(givenColor).mix(Color(getMixColor()), 0.5).fade(0.7).string()
+    const bodyXDimmed = Color(givenColor).mix(Color(getMixColor()), 0.5).fade(0.9).string()
 
-            <ColorBlocksRow style={{marginBottom: 88}}>
-              {this.getColorsList(this.state.darkColorsAmount, this.state.darkestAmount, 'black', this.state.darkColorsMixRotate, this.state.darkSaturation).reverse().map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-
-              <ColorBlock
-                wide
-                style={{ background: isValidHex(numberToHex(this.state.mainColor)) ? numberToHex(this.state.mainColor) : errorColor }}
-                hasValidColor={isValidHex(numberToHex(this.state.mainColor))}
-                color={numberToHex(this.state.mainColor)}
-              />
-
-              {this.getColorsList(this.state.lightColorsAmount, this.state.lightestAmount, 'white', this.state.lightColorsMixRotate, this.state.lightSaturation).map((color, index) => (
-                <ColorBlock style={{ background: color }} hasValidColor={isValidHex(numberToHex(this.state.mainColor))} color={color} key={index} />
-              ))}
-            </ColorBlocksRow>
-
-            <InputsRow>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsAmount} onChange={this.handleDarkColorsAmountChange} type='number' min={0} onBlur={this.handleDarkColorsAmountBlur} label='Dark colors amount' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkestAmount} onChange={this.handleDarkestAmountChange} type='number' sufix='%' min={0} max={99} onBlur={this.handleDarkestAmountBlur} withSlider label='Darkness' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkColorsMixRotate} onChange={this.handleDarkColorsMixRotate} onBlur={this.handleDarkColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Dark colors hue angle' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.darkSaturation} onChange={this.handleDarkSaturationChange} onBlur={this.handleDarkSaturationBlur} min={-100} max={100} type='number' sufix='%' withSlider label='Dark colors saturation' />
-              </InputsRowItem>
-
-              <InputsRowItemSeparataor
-                style={{
-                  background: isValidHex(numberToHex(this.state.mainColor)) ? Color(numberToHex(this.state.mainColor)).mix(Color('black'), 0.3).fade(0.85).string() : '#ddd'
-                }}
-              />
-
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsAmount} onChange={this.handleLightColorsAmountChange} min={0} onBlur={this.handleLightColorsAmountBlur} type='number' label='Light colors amount' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightestAmount} onChange={this.handleLightestAmountChange} onBlur={this.handleLightestAmountBlur} min={0} max={99} type='number' sufix='%' withSlider label='Lightness' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightColorsMixRotate} onChange={this.handleLightColorsMixRotate} onBlur={this.handleLightColorsMixRotateBlur} min={-360} max={360} type='number' sufix='º' withSlider label='Light colors hue angle' />
-              </InputsRowItem>
-              <InputsRowItem>
-                <DynamicInput color={numberToHex(this.state.mainColor)} value={this.state.lightSaturation} onChange={this.handleLightSaturationChange} onBlur={this.handleLightSaturationBlur} min={-100} max={100} type='number' sufix='%' withSlider label='Light colors saturation' />
-              </InputsRowItem>
-            </InputsRow>
-          </ColorsSection>
-        </TopSection>
-
-        <FooterSection>
-          <a href='https://hihayk.github.io/scale'><h1>Scale</h1></a>&nbsp; · &nbsp;made by <a href='http://hihayk.com' target='_blank' rel='noopener noreferrer'>Hayk</a>&nbsp; · &nbsp;<a href='https://github.com/hihayk/scale' target='_blank' rel='noopener noreferrer'>GitHub</a>
-          &nbsp; · &nbsp;<Link to="/gallery">Gallery</Link>
-        </FooterSection>
-      </MainWrapper>
+    document.documentElement.style.setProperty('--bodyColor', bodyColor)
+    document.documentElement.style.setProperty('--bodyDimmed', bodyDimmed)
+    document.documentElement.style.setProperty('--bodyXDimmed', bodyXDimmed)
+    document.documentElement.style.setProperty(
+      '--border',
+      isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color(getMixColor()), 0.3).fade(0.85).string() : '#ddd'
     )
   }
+
+  setBodyColorVar()
+  
+  return (
+    <MainWrapper>
+      <TopSection>
+        <ColorsSection>
+          <GlobalConfigSection>
+            <MainColorSelector
+              onInputChange={handleMainColorChange}
+              onInputBlur={(e) => !e.target.value && setMainColor(666)}
+              onRChange={(e) => handleRChange(e.target.value)}
+              onGChange={(e) => handleGChange(e.target.value)}
+              onBChange={(e) => handleBChange(e.target.value)}
+              mainColor={mainColor}
+              r={r}
+              g={g}
+              b={b}
+            />
+            <BackgroundSelectorSection>
+              <BackgroundSelector
+                setBgColor={setBgColor}
+                darkColors={darkColors}
+                lightColors={lightColors}
+                lightColorsAmount={lightColorsAmount}
+              />
+            </BackgroundSelectorSection>
+            <BackgroundSelectorSection>
+              <Triggers
+                mainColor={mainColor}
+                darkColors={darkColors}
+                lightColors={lightColors}
+                setR={setR}
+                setG={setG}
+                setB={setB}
+                setDarkColorsAmount={setDarkColorsAmount}
+                setDarkestAmount={setDarkestAmount}
+                setDarkColorsMixRotate={setDarkColorsMixRotate}
+                setLightColorsAmount={setLightColorsAmount}
+                setLightestAmount={setLightestAmount}
+                setLightColorsMixRotate={setLightColorsMixRotate}
+                setLightSaturation={setLightSaturation}
+                setDarkSaturation={setDarkSaturation}
+                rgbToMainColor={rgbToMainColor}
+              />
+            </BackgroundSelectorSection>
+          </GlobalConfigSection>
+
+          <ColorsRow
+            mainColor={mainColor}
+            darkColors={darkColors}
+            lightColors={lightColors}
+          />
+
+          <InputsRow>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={darkColorsAmount}
+                onChange={(e) => setDarkColorsAmount(e.target.value)}
+                onBlur={(e) => !e.target.value && setDarkColorsAmount(0)}
+                type='number' 
+                min={0}
+                label='Dark colors amount'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={darkestAmount}
+                onChange={(e) => setDarkestAmount(e.target.value)}
+                onBlur={(e) => !e.target.value && setDarkestAmount(0)}
+                type='number' 
+                sufix='%' 
+                min={0}
+                max={99}
+                withSlider
+                label='Darkness'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={darkColorsMixRotate}
+                onChange={(e) => setDarkColorsMixRotate(e.target.value)}
+                onBlur={(e) => !e.target.value && setDarkColorsMixRotate(0)}
+                min={-360}
+                max={360}
+                type='number'
+                sufix='º'
+                withSlider
+                label='Dark colors hue angle'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={darkSaturation}
+                onChange={(e) => setDarkSaturation(e.target.value)}
+                onBlur={(e) => !e.target.value && setDarkSaturation(0)}
+                min={-100}
+                max={100}
+                type='number'
+                sufix='%'
+                withSlider
+                label='Dark colors saturation'
+              />
+            </InputsRowItem>
+
+            <InputsRowItemSeparataor />
+
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={lightColorsAmount}
+                onChange={(e) => setLightColorsAmount(e.target.value)}
+                onBlur={(e) => !e.target.value && setLightColorsAmount(0)}
+                min={0} 
+                type='number' 
+                label='Light colors amount'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={lightestAmount}
+                onChange={(e) => setLightestAmount(e.target.value)}
+                onBlur={(e) => !e.target.value && setLightestAmount(0)}
+                min={0} 
+                max={99} 
+                type='number'
+                sufix='%'
+                withSlider
+                label='Lightness'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={lightColorsMixRotate}
+                onChange={(e) => setLightColorsMixRotate(e.target.value)}
+                onBlur={(e) => !e.target.value && setLightColorsMixRotate(0)}
+                min={-360} 
+                max={360} 
+                type='number'
+                sufix='º'
+                withSlider
+                label='Light colors hue angle'
+              />
+            </InputsRowItem>
+            <InputsRowItem>
+              <DynamicInput
+                color={numberToHex(mainColor)}
+                value={lightSaturation}
+                onChange={(e) => setLightSaturation(e.target.value)}
+                onBlur={(e) => !e.target.value && setLightSaturation(0)}
+                min={-100} 
+                max={100} 
+                type='number'
+                sufix='%'
+                withSlider
+                label='Light colors saturation'
+              />
+            </InputsRowItem>
+          </InputsRow>
+        </ColorsSection>
+      </TopSection>
+
+      <Footer />
+    </MainWrapper>
+  )
+  
 }
 
 const App = () => (
