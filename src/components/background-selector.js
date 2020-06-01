@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import Color from 'color'
 
 const DotsWrapper = styled.div`
   display: flex;
@@ -20,8 +21,13 @@ const Dot = styled.div`
   height: 32px;
   border-radius: 100%;
   background-color: ${props => props.color};
+  box-shadow: inset 0 0 0.5px 1px var(--borderColor);
   cursor: pointer;
 `
+
+const getBorderColor = (color) => {
+  return Color(color).luminosity() < 0.5 ? 'hsla(0,0%,100%,0.15)' : 'hsla(0,0%,0%,0.15)'
+}
 
 const BackgroundSelector = ({
   setBgColor,
@@ -34,14 +40,14 @@ const BackgroundSelector = ({
     <div>
       <DotsWrapper>
         <DotsColumn className="DotsColumn">
-          <Dot className="Dot" color='white' onClick={() => setBgColor('white')} />
-          <Dot className="Dot" color='black' onClick={() => setBgColor('black')} />
+          <Dot className="Dot" color='white' onClick={() => setBgColor('white')} style={{ '--borderColor': getBorderColor('white') }}/>
+          <Dot className="Dot" color='black' onClick={() => setBgColor('black')} style={{ '--borderColor': getBorderColor('black') }}/>
         </DotsColumn>
         <DotsColumn className="DotsColumn">
           {darkColors.map((color, index) => {
             if(index < 2) {
               return(
-                <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`d-${index}`)} />
+                <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`d-${index}`)} style={{ '--borderColor': getBorderColor(color) }} />
               )
             }
           })}
@@ -50,7 +56,7 @@ const BackgroundSelector = ({
           {lightColors.map((color, index) => {
             if(index > lightColorsAmount - 3) {
               return(
-                <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`l-${lightColorsAmount - index}`)} />
+                <Dot className="Dot" key={index} color={color} onClick={() => setBgColor(`l-${lightColorsAmount - index}`)} style={{ '--borderColor': getBorderColor(color) }} />
               )
             }
           })}
