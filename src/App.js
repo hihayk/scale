@@ -58,6 +58,7 @@ const InputsRowItemSeparataor = styled.div`
   display: block;
   width: 1px;
   flex-shrink: 0;
+  background-color: var(--border);
 `
 
 const ScaleApp = () => {  
@@ -206,6 +207,10 @@ const ScaleApp = () => {
 
     document.documentElement.style.setProperty('--bodyColor', bodyColor)
     document.documentElement.style.setProperty('--bodyDimmed', bodyDimmed)
+    document.documentElement.style.setProperty(
+      '--border',
+      isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color(mixColor), 0.3).fade(0.85).string() : '#ddd'
+    )
   }
 
   setBodyColorVar()
@@ -295,11 +300,7 @@ const ScaleApp = () => {
               />
             </InputsRowItem>
 
-            <InputsRowItemSeparataor
-              style={{
-                background: isValidHex(numberToHex(mainColor)) ? Color(numberToHex(mainColor)).mix(Color('black'), 0.3).fade(0.85).string() : '#ddd'
-              }}
-            />
+            <InputsRowItemSeparataor />
 
             <InputsRowItem>
               <DynamicInput

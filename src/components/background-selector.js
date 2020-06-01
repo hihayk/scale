@@ -40,8 +40,8 @@ const BackgroundSelector = ({
     <div>
       <DotsWrapper>
         <DotsColumn className="DotsColumn">
-          <Dot className="Dot" color='white' onClick={() => setBgColor('white')} style={{ '--borderColor': getBorderColor('white') }}/>
           <Dot className="Dot" color='black' onClick={() => setBgColor('black')} style={{ '--borderColor': getBorderColor('black') }}/>
+          <Dot className="Dot" color='white' onClick={() => setBgColor('white')} style={{ '--borderColor': getBorderColor('white') }}/>
         </DotsColumn>
         <DotsColumn className="DotsColumn">
           {darkColors.map((color, index) => {
