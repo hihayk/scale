@@ -6,7 +6,6 @@ import { numberToHex } from '../utils'
 
 const InputsRow = styled.div`
   display: flex;
-  margin-bottom: 64px;
 
   @media (max-width: 720px) {
     flex-direction: column;

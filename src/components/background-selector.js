@@ -2,7 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 import Color from 'color'
 
+const Wrapper = styled.div`
+  border-left: 1px solid var(--border);
+  padding-left: 48px;
+  align-self: stretch;
+`
+
 const DotsWrapper = styled.div`
+  height: 100%;
   display: flex;
 `
 
@@ -25,6 +32,14 @@ const Dot = styled.div`
   cursor: pointer;
 `
 
+const Title = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 16px;
+  min-height: 32px;
+`
+
 const getBorderColor = (color) => {
   return Color(color).luminosity() < 0.5 ? 'hsla(0,0%,100%,0.15)' : 'hsla(0,0%,0%,0.15)'
 }
@@ -37,7 +52,8 @@ const BackgroundSelector = ({
 }) => {
 
   return (
-    <div>
+    <Wrapper>
+      <Title>Background</Title>
       <DotsWrapper>
         <DotsColumn className="DotsColumn">
           <Dot className="Dot" color='black' onClick={() => setBgColor('black')} style={{ '--borderColor': getBorderColor('black') }}/>
@@ -62,7 +78,7 @@ const BackgroundSelector = ({
           })}
         </DotsColumn>
       </DotsWrapper>
-    </div>
+    </Wrapper>
   )
 }
 

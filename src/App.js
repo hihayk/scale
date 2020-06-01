@@ -35,6 +35,7 @@ const TopSection = styled.div`
 
 const GlobalConfigSection = styled.div`
   display: flex;
+  margin-bottom: 64px;
 `
 
 const InputsRow = styled.div`
