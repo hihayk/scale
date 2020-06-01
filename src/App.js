@@ -12,10 +12,6 @@ import MainColorSelector from './components/main-color-selector'
 import BackgroundSelector from './components/background-selector'
 
 const MainWrapper = styled.div`
-  color: ${props => {
-    const givenColor = isValidHex(props.color) ? props.color : errorColor
-    return Color(givenColor).mix(Color('black'), 0.3).string()
-  }};
   padding: 40px 80px;
   min-height: 100vh;
   display: flex;
@@ -201,9 +197,21 @@ const ScaleApp = () => {
     rgbToMainColor()
   });
 
+  const setBodyColorVar = () => {
+    const givenColor = isValidHex(numberToHex(mainColor)) ? numberToHex(mainColor) : errorColor
+    
+    const mixColor = bgColor.includes('l-') || bgColor.includes('white') ? 'black' : 'white'
+    const bodyColor = Color(givenColor).mix(Color(mixColor), 0.5).string()
+    const bodyDimmed = Color(givenColor).mix(Color(mixColor), 0.5).fade(0.7).string()
+
+    document.documentElement.style.setProperty('--bodyColor', bodyColor)
+    document.documentElement.style.setProperty('--bodyDimmed', bodyDimmed)
+  }
+
+  setBodyColorVar()
   
   return (
-    <MainWrapper color={numberToHex(mainColor)}>
+    <MainWrapper>
       <TopSection>
         <ColorsSection>
           <GlobalConfigSection>

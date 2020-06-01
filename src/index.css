@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Cousine', monospace;
-  color: #828282;
+  color: var(--bodyColor);
   background-color: var(--bodyBg);
   font-size: 14px;
   line-height: 20px;

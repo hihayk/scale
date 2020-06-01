@@ -3,8 +3,10 @@ import styled, { css } from 'styled-components'
 const sliderThumbStyles = css`
   height: 10px;
   width: 10px;
+  transform: scale(var(--thumbScale));
   border-radius: 50%;
-  background: #666;
+  color: inherit;
+  background: var(--bodyColor);
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -4px;
@@ -14,11 +16,13 @@ const sliderTrackStyles = css`
   width: 100%;
   height: 2px;
   cursor: pointer;
-  background: #D8D8D8;
+  background: var(--bodyDimmed);
   border-radius: 2px;
 `
 
 const Slider = styled.input`
+  --thumbScale: 1;
+
   width: 96px;
   height: 12px;
   -webkit-appearance: none;
@@ -31,15 +35,13 @@ const Slider = styled.input`
 
   &:focus {
     outline: none;
+    --thumbScale: 1.2;
   }
   &::-webkit-slider-runnable-track {
     ${sliderTrackStyles}
   }
   &::-webkit-slider-thumb {
     ${sliderThumbStyles}
-  }
-  &:focus::-webkit-slider-runnable-track {
-    background: #aaa;
   }
   &::-moz-range-track {
     ${sliderTrackStyles}
