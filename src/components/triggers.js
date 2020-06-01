@@ -73,6 +73,7 @@ const Triggers = ({
   setLightColorsMixRotate,
   setLightSaturation,
   setDarkSaturation,
+  rgbToMainColor,
 }) => {
   const randomState = () => {
     setR(randomNumber(0, 255))
@@ -90,12 +91,14 @@ const Triggers = ({
     
     setDarkColorsMixRotate(randomNumber(0, 70))
     setLightColorsMixRotate(randomNumber(0, 70))
+    rgbToMainColor()
   }
   
   const randomColor = () => {
     setR(randomNumber(0, 255))
     setG(randomNumber(0, 255))
     setB(randomNumber(0, 255))
+    rgbToMainColor()
   }
 
   return (

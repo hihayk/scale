@@ -146,6 +146,14 @@ const ScaleApp = () => {
     document.getElementById('themeMetaTag').setAttribute('content', numberToHex(mainColor))
   }
 
+  const updateRgbWithMainColor = (color) => {
+    if (isValidHex(numberToHex(color))) {
+      setR(Color(numberToHex(color)).rgb().red())
+      setG(Color(numberToHex(color)).rgb().green())
+      setB(Color(numberToHex(color)).rgb().blue())
+    }
+  }
+
   const handleMainColorChange = (e) => {
     let typedColorFiltered
     const typedColor = e.target.value
@@ -167,12 +175,17 @@ const ScaleApp = () => {
     }, 0)
   }
 
-  const updateRgbWithMainColor = (color) => {
-    if (isValidHex(numberToHex(color))) {
-      setR(Color(numberToHex(color)).rgb().red())
-      setG(Color(numberToHex(color)).rgb().green())
-      setB(Color(numberToHex(color)).rgb().blue())
-    }
+  const handleRChange = (value) => {
+    setR(value)
+    rgbToMainColor()
+  }
+  const handleGChange = (value) => {
+    setG(value)
+    rgbToMainColor()
+  }
+  const handleBChange = (value) => {
+    setB(value)
+    rgbToMainColor()
   }
   
   const bgRefToNumber = (ref) => {
@@ -214,7 +227,6 @@ const ScaleApp = () => {
   useEffect(() => {
     updateHash()
     updateThemeColor()
-    rgbToMainColor()
   });
 
   const setBodyColorVar = () => {
@@ -254,9 +266,9 @@ const ScaleApp = () => {
             <MainColorSelector
               onInputChange={handleMainColorChange}
               onInputBlur={(e) => !e.target.value && setMainColor(666)}
-              onRChange={(e) => setR(e.target.value)}
-              onGChange={(e) => setG(e.target.value)}
-              onBChange={(e) => setB(e.target.value)}
+              onRChange={(e) => handleRChange(e.target.value)}
+              onGChange={(e) => handleGChange(e.target.value)}
+              onBChange={(e) => handleBChange(e.target.value)}
               mainColor={mainColor}
               r={r}
               g={g}
@@ -286,6 +298,7 @@ const ScaleApp = () => {
                 setLightColorsMixRotate={setLightColorsMixRotate}
                 setLightSaturation={setLightSaturation}
                 setDarkSaturation={setDarkSaturation}
+                rgbToMainColor={rgbToMainColor}
               />
             </BackgroundSelectorSection>
           </GlobalConfigSection>
