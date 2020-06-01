@@ -70,7 +70,19 @@ const InputsRowItemSeparataor = styled.div`
 const BackgroundSelectorSection = styled.div`
   border-left: 1px solid var(--border);
   padding: 0 48px;
-  align-self: stretch;
+  height: 160px;
+  
+  @media (max-width: 720px) {
+    padding: 16px 0;
+    margin-top: 16px;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+`
+
+const TriggersSection = styled.div`
+  border-left: 1px solid var(--border);
+  padding: 0 48px;
   
   @media (max-width: 720px) {
     padding: 16px 0;
@@ -282,7 +294,7 @@ const ScaleApp = () => {
                 lightColorsAmount={lightColorsAmount}
               />
             </BackgroundSelectorSection>
-            <BackgroundSelectorSection>
+            <TriggersSection>
               <Triggers
                 mainColor={mainColor}
                 darkColors={darkColors}
@@ -300,7 +312,7 @@ const ScaleApp = () => {
                 setDarkSaturation={setDarkSaturation}
                 rgbToMainColor={rgbToMainColor}
               />
-            </BackgroundSelectorSection>
+            </TriggersSection>
           </GlobalConfigSection>
 
           <ColorsRow
