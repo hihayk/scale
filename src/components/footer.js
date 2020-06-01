@@ -5,6 +5,8 @@ import styled from 'styled-components'
 const FooterSection = styled.div`
   a {
     color: inherit;
+    text-underline-position: under;
+    text-decoration-color: var(--bodyDimmed);
   }
 
   h1 {
