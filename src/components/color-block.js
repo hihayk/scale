@@ -24,11 +24,6 @@ const ColorBlockContainer = styled.div`
   flex-shrink: 1;
   cursor: pointer;
 
-  &:not(:hover) .ColorBlockCode {
-    opacity: 0;
-    transition: .6s;
-  }
-
   @media (max-width: 720px) {
     ${props => props.wide && 'min-width: 96px'};
   }
