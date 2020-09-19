@@ -54,6 +54,14 @@ ${lights.join(`
 `)}`
 }
 
+const getJson = (darkColors, mainColor, lightColors) =>{
+  return JSON.stringify({
+    'mainColor': numberToHex(mainColor),
+    'darkColors': darkColors.map((color) => Color(color).hex()),
+    'lightColors': lightColors.map((color) => Color(color).hex())
+  })
+}
+
 const randomNumber = (min, max) => {  
   return Math.floor(Math.random() * (max - min) + min)
 }
@@ -116,6 +124,12 @@ const Triggers = ({
           text={getColorsListText(darkColors, mainColor, lightColors)}
         >
           <Button>Copy colors</Button>
+        </CopyToClipboard>
+
+        <CopyToClipboard
+            text={getJson(darkColors, mainColor, lightColors)}
+        >
+          <Button>Copy JSON</Button>
         </CopyToClipboard>
 
         <Button onClick={() => randomState()}>Randomize all</Button>
